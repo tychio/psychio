@@ -104,4 +104,9 @@ export default {
   border: 1px solid #333;
   box-sizing: border-box;
 }
+
+.time-block img {
+  display: block;
+  margin: 0 auto;
+}
 </style>
