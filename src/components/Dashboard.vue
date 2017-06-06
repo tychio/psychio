@@ -2,13 +2,18 @@
   <div>
     <h1>PsychIO</h1>
     <button @click="play()">Play</button>
-    <ul v-if="now > 0">
-      <li v-for="timeline in timelines">
-        <div class="showcase" v-if="timeline.type == 'img'">
-          <img :src="timeline.url" v-show="now > timeline.start && now<timeline.end">
-        </div>
-      </li>
-    </ul>
+    <div>
+      <div class="time-container" v-for="timeline in timelines">
+        <template v-if="timeline.type === 'img'">
+          <div class="showcase" v-if="now > timeline.start && now<timeline.end">
+            <img :src="timeline.url">
+          </div>
+          <div class="time-block" v-if="now === 0" :style="{width: ((timeline.end - timeline.start)/duration)*size.width + 'px'}">
+              <img :src="timeline.url" height="60">
+          </div>
+        </template>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -17,6 +22,10 @@ export default {
   name: 'Dashboard',
   data () {
     let data = {
+      size: {
+        width: 0,
+        height: 0
+      },
       now: 0,
       timelines: [
         {
@@ -35,23 +44,44 @@ export default {
     }
     return data
   },
+  computed: {
+    duration: function () {
+      return this.timelines[this.timelines.length - 1].end
+    }
+  },
   methods: {
     play: function () {
       const start = (new Date()).getTime()
       const timer = setInterval(() => {
         this.now = (new Date()).getTime() - start
-        if (this.now > this.timelines[this.timelines.length - 1].end) {
+        if (this.now > this.duration) {
           this.now = 0
           clearInterval(timer)
         }
       }, 500)
+    },
+    getWidth: function () {
+      this.size.width = document.documentElement.clientWidth
+    },
+    getHeight: function () {
+      this.size.height = document.documentElement.clientHeight
     }
+  },
+  mounted: function () {
+    this.$nextTick(() => {
+      window.addEventListener('resize', this.getWidth)
+      window.addEventListener('resize', this.getHeight)
+
+      this.getWidth()
+      this.getHeight()
+    })
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+
 .showcase {
   position: absolute;
   top: 0;
@@ -63,5 +93,15 @@ export default {
 .showcase img {
   width: 100%;
   height: 100%;
+}
+
+.time-container {
+  float: left;
+}
+
+.time-block {
+  display: inline-block;
+  border: 1px solid #333;
+  box-sizing: border-box;
 }
 </style>
