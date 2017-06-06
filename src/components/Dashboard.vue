@@ -1,20 +1,22 @@
 <template>
-  <div>
+<main>
+  <section class="container">
     <h1>PsychIO</h1>
-    <button @click="play()">Play</button>
-    <div>
-      <div class="time-container" v-for="timeline in timelines">
-        <template v-if="timeline.type === 'img'">
-          <div class="showcase" v-if="now > timeline.start && now<timeline.end">
-            <img :src="timeline.url">
-          </div>
-          <div class="time-block" v-if="now === 0" :style="{width: ((timeline.end - timeline.start)/duration)*size.width + 'px'}">
-              <img :src="timeline.url" height="60">
-          </div>
-        </template>
-      </div>
+    <button class="btn" @click="play()">Play</button>
+  </section>
+  <section class="container" ref="container">
+    <div class="time-container" v-for="timeline in timelines">
+      <template v-if="timeline.type === 'img'">
+        <div class="showcase" v-if="now > timeline.start && now<timeline.end">
+          <img :src="timeline.url">
+        </div>
+        <div class="time-block" v-if="now === 0" :style="{width: ((timeline.end - timeline.start)/duration)*size.width + 'px'}">
+            <img :src="timeline.url" height="60">
+        </div>
+      </template>
     </div>
-  </div>
+  </section>
+</main>
 </template>
 
 <script>
@@ -61,19 +63,13 @@ export default {
       }, 500)
     },
     getWidth: function () {
-      this.size.width = document.documentElement.clientWidth
-    },
-    getHeight: function () {
-      this.size.height = document.documentElement.clientHeight
+      this.size.width = this.$refs.container.clientWidth
     }
   },
   mounted: function () {
     this.$nextTick(() => {
       window.addEventListener('resize', this.getWidth)
-      window.addEventListener('resize', this.getHeight)
-
       this.getWidth()
-      this.getHeight()
     })
   }
 }
@@ -81,6 +77,10 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
+.container {
+  overflow: hidden;
+  margin: 10px;
+}
 
 .showcase {
   position: absolute;
@@ -101,12 +101,20 @@ export default {
 
 .time-block {
   display: inline-block;
-  border: 1px solid #333;
   box-sizing: border-box;
+  border: 1px solid #333;
 }
 
 .time-block img {
   display: block;
   margin: 0 auto;
+}
+
+.btn {
+  width: 200px;
+  height: 50px;
+  line-height: 40px;
+  text-align: center;
+  font-size: 32px;
 }
 </style>
