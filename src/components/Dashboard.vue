@@ -16,8 +16,12 @@
   <section class="container" ref="container">
     <div class="timeline" v-for="timeline in timelines">
       <template v-if="timeline.type === 'img'">
-        <div class="timeline-block" v-for="block in timeline.content" :style="{width: ((block.end - block.start)/duration)*size.width + 'px'}">
+        <div class="timeline-block" v-for="(block, index) in timeline.content" :style="{width: ((block.end - block.start)/duration)*size.width + 'px'}">
           <img :src="block.url" height="60">
+          <input type="number" v-model="block.start" v-if="index > 0">
+          <span v-else>0</span>
+          <span>-</span>
+          <input type="number" v-model="block.end">
         </div>
       </template>
 
@@ -155,5 +159,9 @@ export default {
   line-height: 40px;
   text-align: center;
   font-size: 32px;
+}
+
+input[type="number"] {
+  width: 50px;
 }
 </style>
