@@ -1,9 +1,11 @@
 <template>
-  <div>
-    <a v-if="audio.url" :href="audio.url">Record {{(audio.end - audio.start)/1000}} s</a>
-    <span v-else-if="isActive">Recording</span>
-    <span v-else>No record</span>
-    <hr v-if="media">
+  <div class="container">
+    <template v-if="media">
+      <button class="btn" v-if="audio.url" @click="save()">Save</button>
+      <a v-if="audio.url" :href="audio.url">Record {{(audio.end - audio.start)/1000}} s</a>
+      <span v-else-if="isActive">Recording</span>
+      <span v-else>No record</span>
+    </template>
   </div>
 </template>
 
@@ -18,6 +20,11 @@ export default {
       media: null
     }
     return data
+  },
+  methods: {
+    save: function () {
+      this.media.save()
+    }
   },
   computed: {
     isActive: function () {
@@ -49,5 +56,11 @@ export default {
 <style scoped>
   hr {
     margin: 10px;
+  }
+
+  .btn {
+    height: 25px;
+    line-height: 20px;
+    width: 80px;
   }
 </style>
