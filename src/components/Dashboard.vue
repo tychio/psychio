@@ -34,10 +34,6 @@ export default {
   name: 'Dashboard',
   data () {
     let data = {
-      size: {
-        width: 0,
-        height: 0
-      },
       now: 0,
       outputs: [
         {
@@ -101,16 +97,7 @@ export default {
           clearInterval(timer)
         }
       }, 50)
-    },
-    getWidth: function () {
-      this.size.width = this.$refs.container.clientWidth
     }
-  },
-  mounted: function () {
-    this.$nextTick(() => {
-      window.addEventListener('resize', this.getWidth)
-      this.getWidth()
-    })
   },
   components: {
     Recorder
