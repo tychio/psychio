@@ -1,8 +1,8 @@
 <template>
   <div class="container">
     <template v-if="media">
-      <button class="btn" v-if="audio.url" @click="save()">Save</button>
-      <a v-if="audio.url" :href="audio.url">Record {{(audio.end - audio.start)/1000}} s</a>
+      <button class="btn" v-if="item.audio" @click="save()">Save</button>
+      <a v-if="item.audio" :href="item.audio">Record {{item.period/1000}} s</a>
       <span v-else-if="isActive">Recording</span>
       <span v-else>No record</span>
     </template>
@@ -14,7 +14,7 @@ import MediaStreamRecorder from 'msr'
 
 export default {
   name: 'Recorder',
-  props: ['audio', 'active'],
+  props: ['item', 'active'],
   data () {
     let data = {
       media: null
@@ -29,7 +29,7 @@ export default {
   computed: {
     isActive: function () {
       if (this.active) {
-        this.media.start(this.audio.end - this.audio.start)
+        this.media.start(this.item.period)
       } else if (this.media) {
         this.media.stop()
       }
@@ -43,7 +43,7 @@ export default {
       this.media = new MediaStreamRecorder(stream)
       this.media.mimeType = 'audio/wav'
       this.media.ondataavailable = blob => {
-        this.audio.url = URL.createObjectURL(blob)
+        this.item.audio = URL.createObjectURL(blob)
       }
     }, error => {
       console.error('media error', error)

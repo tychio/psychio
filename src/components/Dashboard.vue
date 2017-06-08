@@ -7,20 +7,19 @@
   <section class="container" ref="container">
     <div class="timeline">
       <div class="timeline-block" v-for="(item,index) in outputs">
-        <div v-if="item.type === 'img'">
+        <div v-if="item.type === 'img-audio'">
           <img :src="item.url" height="100">
           <div class="showcase" v-if="index === currentIndex">
             <img :src="item.url">
           </div>
+          <Recorder 
+            :active="index === currentIndex" 
+            :item="item"
+          ></Recorder>
         </div>
         <div>
           <input type="number" v-model="item.period">
         </div>
-      </div>
-    </div>
-    <div class="timeline">
-      <div class="timeline-block" v-for="item in inputs">
-        <Recorder :active="now > item.start && now <= item.end" :audio="item"></Recorder>
       </div>
     </div>
   </section>
@@ -37,28 +36,16 @@ export default {
       now: 0,
       outputs: [
         {
-          type: 'img',
+          type: 'img-audio',
           url: 'http://pic.baike.soso.com/ugc/baikepic2/4691/20150114182042-1266615931.jpg/300',
+          audio: '',
           period: 3000
         },
         {
-          type: 'img',
+          type: 'img-audio',
           url: 'http://demo14.delsen.net.cn/kepuziyuan/images/dwwg7.jpg',
+          audio: '',
           period: 2000
-        }
-      ],
-      inputs: [
-        {
-          type: 'audio',
-          url: '',
-          start: 0,
-          end: 3000
-        },
-        {
-          type: 'audio',
-          url: '',
-          start: 3000,
-          end: 5000
         }
       ]
     }
@@ -126,8 +113,6 @@ export default {
 }
 
 .timeline {
-  float: left;
-  width: 50%;
 }
 
 .timeline-block {
