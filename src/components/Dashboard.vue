@@ -5,7 +5,11 @@
     <button class="btn" @click="play()">Play</button>
   </section>
   <section class="container">
-    <Timeline :list="list" :currentIndex="currentIndex"></Timeline>
+    <Timeline 
+      :list="list" 
+      :currentIndex="currentIndex"
+      @append="appendItem"
+    ></Timeline>
   </section>
 </main>
 </template>
@@ -39,7 +43,7 @@ export default {
     duration: function () {
       let duration = 0
       this.list.forEach(function (item) {
-        duration += item.period
+        duration += parseInt(item.period)
       })
       return duration
     },
@@ -68,6 +72,9 @@ export default {
           clearInterval(timer)
         }
       }, 50)
+    },
+    appendItem: function (item) {
+      this.list.push(item)
     }
   },
   components: {
@@ -76,8 +83,7 @@ export default {
 }
 </script>
 
-<!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style>
 .container {
   overflow: hidden;
   margin: 10px;
