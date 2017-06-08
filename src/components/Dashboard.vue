@@ -4,17 +4,15 @@
     <h1>PsychIO</h1>
     <button class="btn" @click="play()">Play</button>
   </section>
-  <section class="container">
-    <div v-for="(item, index) in outputs">
-      <div class="showcase" v-if="item.type === 'img' && index === currentIndex">
-        <img :src="item.url">
-      </div>
-    </div>
-  </section>
   <section class="container" ref="container">
     <div class="timeline">
-      <div class="timeline-block" v-for="item in outputs">
-        <img :src="item.url" v-if="item.type === 'img'" height="60">
+      <div class="timeline-block" v-for="(item,index) in outputs">
+        <div v-if="item.type === 'img'">
+          <img :src="item.url" height="100">
+          <div class="showcase" v-if="index === currentIndex">
+            <img :src="item.url">
+          </div>
+        </div>
         <div>
           <input type="number" v-model="item.period">
         </div>
