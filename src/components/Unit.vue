@@ -14,6 +14,7 @@
   <div>
     <input type="number" v-model="item.period">
   </div>
+  <button @click="remove">Remove</button>
 </div>
 </template>
 
@@ -31,6 +32,9 @@ export default {
         this.item.url = ent.target.result
       }
       reader.readAsDataURL(file.target.files[0])
+    },
+    remove: function () {
+      this.$emit('remove')
     }
   },
   components: {

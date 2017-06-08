@@ -9,6 +9,7 @@
       :list="list" 
       :currentIndex="currentIndex"
       @append="appendItem"
+      @remove="removeItem"
     ></Timeline>
   </section>
 </main>
@@ -75,6 +76,9 @@ export default {
     },
     appendItem: function (item) {
       this.list.push(item)
+    },
+    removeItem: function (index) {
+      this.list.splice(index, 1)
     }
   },
   components: {

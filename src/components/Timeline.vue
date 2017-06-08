@@ -3,6 +3,7 @@
   <Unit v-for="(item,index) in list" key="index"
     :item="item"
     :active="index === currentIndex"
+    @remove="$emit('remove', index)"
   ></Unit>
   <button class="btn" @click="create()">Create</button>
 </div>
