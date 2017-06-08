@@ -41,7 +41,6 @@ export default {
       audio: true
     }, stream => {
       this.media = new MediaStreamRecorder(stream)
-      console.log('media', this.media)
       this.media.mimeType = 'audio/wav'
       this.media.ondataavailable = blob => {
         this.audio.url = URL.createObjectURL(blob)

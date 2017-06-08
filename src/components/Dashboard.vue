@@ -5,31 +5,25 @@
     <button class="btn" @click="play()">Play</button>
   </section>
   <section class="container">
-    <div v-for="timeline in timelines">
-      <template v-for="block in timeline.content">
-        <div class="showcase" v-if="timeline.type === 'img' && now > block.start && now<=block.end">
-          <img :src="block.url">
-        </div>
-      </template>
+    <div v-for="(item, index) in outputs">
+      <div class="showcase" v-if="item.type === 'img' && index === currentIndex">
+        <img :src="item.url">
+      </div>
     </div>
   </section>
   <section class="container" ref="container">
-    <div class="timeline" v-for="timeline in timelines">
-      <template v-if="timeline.type === 'img'">
-        <div class="timeline-block" v-for="(block, index) in timeline.content" :style="{width: ((block.end - block.start)/duration)*size.width + 'px'}">
-          <img :src="block.url" height="60">
-          <input type="number" v-model="block.start" v-if="index > 0">
-          <span v-else>0</span>
-          <span>-</span>
-          <input type="number" v-model="block.end">
+    <div class="timeline">
+      <div class="timeline-block" v-for="item in outputs">
+        <img :src="item.url" v-if="item.type === 'img'" height="60">
+        <div>
+          <input type="number" v-model="item.period">
         </div>
-      </template>
-
-      <template v-else-if="timeline.type === 'audio'">
-        <div class="timeline-block" v-for="block in timeline.content" :style="{width: ((block.end - block.start)/duration)*size.width + 'px'}">
-          <Recorder :active="now > block.start && now<=block.end" :audio="block"></Recorder>
-        </div>
-      </template>
+      </div>
+    </div>
+    <div class="timeline">
+      <div class="timeline-block" v-for="item in inputs">
+        <Recorder :active="now > item.start && now <= item.end" :audio="item"></Recorder>
+      </div>
     </div>
   </section>
 </main>
@@ -47,34 +41,30 @@ export default {
         height: 0
       },
       now: 0,
-      timelines: [
+      outputs: [
         {
           type: 'img',
-          content: [{
-            url: 'http://pic.baike.soso.com/ugc/baikepic2/4691/20150114182042-1266615931.jpg/300',
-            start: 0,
-            end: 3000
-          },
-          {
-            url: 'http://demo14.delsen.net.cn/kepuziyuan/images/dwwg7.jpg',
-            start: 3000,
-            end: 5000
-          }]
+          url: 'http://pic.baike.soso.com/ugc/baikepic2/4691/20150114182042-1266615931.jpg/300',
+          period: 3000
+        },
+        {
+          type: 'img',
+          url: 'http://demo14.delsen.net.cn/kepuziyuan/images/dwwg7.jpg',
+          period: 2000
+        }
+      ],
+      inputs: [
+        {
+          type: 'audio',
+          url: '',
+          start: 0,
+          end: 3000
         },
         {
           type: 'audio',
-          content: [
-            {
-              url: '',
-              start: 0,
-              end: 3000
-            },
-            {
-              url: '',
-              start: 3000,
-              end: 5000
-            }
-          ]
+          url: '',
+          start: 3000,
+          end: 5000
         }
       ]
     }
@@ -82,12 +72,24 @@ export default {
   },
   computed: {
     duration: function () {
-      let maxDuration = 0
-      this.timelines.forEach(function (timeline) {
-        let duration = timeline.content[timeline.content.length - 1].end
-        maxDuration = Math.max(duration, maxDuration)
+      let duration = 0
+      this.outputs.forEach(function (item) {
+        duration += item.period
       })
-      return maxDuration
+      return duration
+    },
+    currentIndex: function () {
+      let current
+      let passTime = this.now
+      for (let index = -1; index < this.outputs.length; index++) {
+        let item = this.outputs[index + 1]
+        if (passTime <= 0) {
+          current = index
+          break
+        }
+        passTime -= item.period
+      }
+      return current
     }
   },
   methods: {
@@ -100,7 +102,7 @@ export default {
           self.now = 0
           clearInterval(timer)
         }
-      }, 500)
+      }, 50)
     },
     getWidth: function () {
       this.size.width = this.$refs.container.clientWidth
@@ -140,10 +142,11 @@ export default {
 
 .timeline {
   float: left;
+  width: 50%;
 }
 
 .timeline-block {
-  display: inline-block;
+  display: block;
   box-sizing: border-box;
   border: 1px solid #333;
 }
