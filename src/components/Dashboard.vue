@@ -90,8 +90,4 @@ export default {
   text-align: center;
   font-size: 32px;
 }
-
-input[type="number"] {
-  width: 50px;
-}
 </style>
