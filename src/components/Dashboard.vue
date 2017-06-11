@@ -1,5 +1,5 @@
 <template>
-<main>
+<main class="phone-viewport">
   <section class="container">
     <h1 class="md-display-2">PsychIO</h1>
     <md-button class="md-raised md-accent" @click.native="play">Play</md-button>

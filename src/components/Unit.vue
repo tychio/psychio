@@ -61,10 +61,15 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .md-card {
-  max-width: 480px;
-  margin: 10px auto;
+  margin: 20px;
+}
+
+.md-card .md-card-header .md-card-media {
+  width: 320px;
+  flex: 0 0 320px;
+  height: auto;
 }
 
 .showcase {
