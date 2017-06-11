@@ -19,6 +19,7 @@ export default {
     create: function () {
       this.$emit('append', {
         type: 'img-audio',
+        name: '',
         url: '',
         audio: '',
         period: 0

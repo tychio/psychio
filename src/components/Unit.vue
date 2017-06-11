@@ -1,20 +1,38 @@
 <template>
-<div class="timeline-block">
-  <div v-if="item.type === 'img-audio'">
-    <img :src="item.url" height="100">
-    <input type="file" accept="image/*" @change="uploaded">
-    <div class="showcase" v-if="active">
-      <img :src="item.url" alt="Please upload image">
-    </div>
-    <Recorder 
-      :active="active" 
-      :item="item"
-    ></Recorder>
+<div v-if="item.type === 'img-audio'">
+  <div class="showcase" v-if="active">
+    <img :src="item.url" alt="Please upload image">
   </div>
-  <div>
-    <input type="number" v-model="item.period">
-  </div>
-  <button @click="remove">Remove</button>
+  <md-card>
+    <md-card-header>
+      <md-card-header-text>
+        <div class="md-title" v-text="item.name"></div>
+      </md-card-header-text>
+
+      <md-card-media md-big>
+        <img :src="item.url" :alt="item.name">
+      </md-card-media>
+    </md-card-header>
+
+    <md-card-actions>
+      <md-button class="md-raised md-warn" @click.native="remove">Remove</md-button>
+    </md-card-actions>
+
+    <md-card-content>
+        <md-input-container>
+          <label>Number</label>
+          <md-input type="number" v-model="item.period"></md-input>
+        </md-input-container>
+        <md-input-container>
+          <label>Upload Image</label>
+          <md-file @change.native="uploaded" accept="image/*"></md-file>
+        </md-input-container>
+        <Recorder 
+          :active="active" 
+          :item="item"
+        ></Recorder>
+    </md-card-content>
+  </md-card>
 </div>
 </template>
 
@@ -44,8 +62,14 @@ export default {
 </script>
 
 <style>
+.md-card {
+  max-width: 480px;
+  margin: 10px auto;
+}
+
 .showcase {
   position: fixed;
+  z-index: 9999;
   top: 0;
   bottom: 0;
   left: 0;
@@ -55,16 +79,5 @@ export default {
 .showcase img {
   width: 100%;
   height: 100%;
-}
-
-.timeline-block {
-  display: block;
-  box-sizing: border-box;
-  border: 1px solid #333;
-}
-
-.timeline-block img {
-  display: block;
-  margin: 0 auto;
 }
 </style>

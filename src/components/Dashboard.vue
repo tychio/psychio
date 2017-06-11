@@ -1,7 +1,7 @@
 <template>
 <main>
   <section class="container">
-    <h1>PsychIO</h1>
+    <h1 class="md-display-2">PsychIO</h1>
     <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
   </section>
   <section class="container">
@@ -26,13 +26,15 @@ export default {
       list: [
         {
           type: 'img-audio',
-          url: 'http://pic.baike.soso.com/ugc/baikepic2/4691/20150114182042-1266615931.jpg/300',
+          name: 'Tiger',
+          url: 'http://lorempixel.com/400/200/animals/3/',
           audio: '',
           period: 3000
         },
         {
           type: 'img-audio',
-          url: 'http://demo14.delsen.net.cn/kepuziyuan/images/dwwg7.jpg',
+          name: 'dog',
+          url: 'http://lorempixel.com/400/200/animals/8/',
           audio: '',
           period: 2000
         }
