@@ -2,6 +2,7 @@
   <div class="container">
     <template v-if="media">
       <md-button class="md-primary" v-if="item.audio" @click.native="download()">Download audio record</md-button>
+      <md-button class="md-accent" v-if="item.audio" target="_blank" :href="item.audio">Play audio</md-button>
       <span v-else-if="isActive">Recording</span>
       <span v-else>No record</span>
     </template>
