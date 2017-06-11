@@ -2,7 +2,7 @@
 <main>
   <section class="container">
     <h1>PsychIO</h1>
-    <button class="btn" @click="play()">Play</button>
+    <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
   </section>
   <section class="container">
     <Timeline 
