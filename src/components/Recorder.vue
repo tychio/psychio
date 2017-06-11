@@ -36,6 +36,7 @@ export default {
     }
   },
   mounted () {
+    navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
     navigator.getUserMedia({
       audio: true
     }, stream => {
