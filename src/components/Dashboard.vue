@@ -74,7 +74,7 @@ export default {
           self.now = 0
           clearInterval(timer)
         }
-      }, 50)
+      }, 20)
     },
     appendItem: function (item) {
       this.list.push(item)

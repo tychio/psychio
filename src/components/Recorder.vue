@@ -1,8 +1,7 @@
 <template>
   <div class="container">
     <template v-if="media">
-      <button class="btn" v-if="item.audio" @click="save()">Save</button>
-      <a v-if="item.audio" :href="item.audio">Record {{item.period/1000}} s</a>
+      <md-button class="md-primary" v-if="item.audio" @click.native="download()">Download audio record</md-button>
       <span v-else-if="isActive">Recording</span>
       <span v-else>No record</span>
     </template>
@@ -22,7 +21,7 @@ export default {
     return data
   },
   methods: {
-    save: function () {
+    download: function () {
       this.media.save()
     }
   },
