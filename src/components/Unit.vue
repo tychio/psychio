@@ -29,6 +29,11 @@
       </md-card-actions>
       <md-card-content>
           <md-input-container>
+            <label>Name</label>
+            <md-input type="text" v-model="item.name"></md-input>
+          </md-input-container>
+
+          <md-input-container>
             <label>Upload Photo</label>
             <md-file @change.native="uploaded" accept="image/*"></md-file>
           </md-input-container>
