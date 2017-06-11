@@ -5,7 +5,7 @@
     :active="index === currentIndex"
     @remove="$emit('remove', index)"
   ></Unit>
-  <button class="btn" @click="create()">Create</button>
+  <md-button class="md-raised md-primary" @click.native="create()">Add</md-button>
 </div>
 </template>
 

@@ -94,12 +94,4 @@ export default {
   overflow: hidden;
   margin: 10px;
 }
-
-.btn {
-  width: 200px;
-  height: 50px;
-  line-height: 40px;
-  text-align: center;
-  font-size: 32px;
-}
 </style>
