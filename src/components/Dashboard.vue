@@ -5,86 +5,51 @@
     <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
   </section>
   <section class="container">
-    <Timeline 
-      :list="list" 
-      :currentIndex="currentIndex"
-      @append="appendItem"
-      @remove="removeItem"
-    ></Timeline>
+    <div v-for="(item, index) in list" v-if="current >= index" v-show="current <= index">
+      <component :is="item.type" :item="item" @end="next"
+      ></component>
+    </div>
   </section>
 </main>
 </template>
 
 <script>
-import Timeline from './timeline'
+import PictureNaming from './PictureNaming'
 
 export default {
   name: 'Dashboard',
   data () {
     let data = {
-      now: 0,
+      current: -1,
       list: [
         {
-          type: 'img-audio',
-          name: 'Tiger',
-          url: 'http://lorempixel.com/400/200/animals/3/',
-          audio: '',
-          period: 3000
+          type: 'picture-naming',
+          name: 'tiger',
+          url: 'http://lorempixel.com/400/200/animals/3/'
         },
         {
-          type: 'img-audio',
+          type: 'picture-naming',
           name: 'dog',
-          url: 'http://lorempixel.com/400/200/animals/8/',
-          audio: '',
-          period: 2000
+          url: 'http://lorempixel.com/400/200/animals/8/'
         }
       ]
     }
     return data
   },
-  computed: {
-    duration: function () {
-      let duration = 0
-      this.list.forEach(function (item) {
-        duration += parseInt(item.period)
-      })
-      return duration
-    },
-    currentIndex: function () {
-      let current
-      let passTime = this.now
-      for (let index = -1; index < this.list.length; index++) {
-        let item = this.list[index + 1]
-        if (passTime <= 0) {
-          current = index
-          break
-        }
-        passTime -= item.period
-      }
-      return current
-    }
-  },
   methods: {
     play: function () {
-      const start = (new Date()).getTime()
-      const self = this
-      const timer = setInterval(() => {
-        self.now = (new Date()).getTime() - start
-        if (self.now > self.duration) {
-          self.now = 0
-          clearInterval(timer)
-        }
-      }, 20)
+      this.current = -1
+      this.$nextTick(() => {
+        this.next()
+      })
     },
-    appendItem: function (item) {
-      this.list.push(item)
-    },
-    removeItem: function (index) {
-      this.list.splice(index, 1)
+    next: function () {
+      this.current++
+      console.log(this.current)
     }
   },
   components: {
-    Timeline
+    'picture-naming': PictureNaming
   }
 }
 </script>
