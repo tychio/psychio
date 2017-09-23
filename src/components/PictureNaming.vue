@@ -1,5 +1,7 @@
 <template>
-    <img :src="item.url" :alt="item.name">
+  <div class="stage" :style="{
+    'background-image': 'url(./static/pictures/' + item.src + '.gif)'
+  }"></div>
 </template>
 
 <script>
@@ -15,28 +17,16 @@ export default {
 </script>
 
 <style scoped>
-.md-card {
-  max-width: 640px;
-  margin: 20px auto;
-}
-
-.md-card .md-card-header .md-card-media {
-  width: 320px;
-  flex: 0 0 320px;
-  height: auto;
-}
-
-.showcase {
-  position: fixed;
+.stage {
+  position: absolute;
   z-index: 9999;
   top: 0;
   bottom: 0;
   left: 0;
   right: 0;
-}
-
-.showcase img {
-  width: 100%;
-  height: 100%;
+  background-color: white;
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: contain;
 }
 </style>

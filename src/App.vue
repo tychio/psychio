@@ -2,6 +2,11 @@
   <div id="app">
     <img src="./assets/logo.png">
     <Dashboard></Dashboard>
+    <ul class="transparent">
+      <li v-for="pic in pictures">
+        <img :src="'./static/pictures/' + pic + '.gif'">
+      </li>
+    </ul>
   </div>
 </template>
 
@@ -10,6 +15,14 @@ import Dashboard from './components/dashboard'
 
 export default {
   name: 'app',
+  data: function () {
+    return {
+      pictures: [
+        'act020bow',
+        'act045conduct'
+      ]
+    }
+  },
   components: {
     Dashboard
   }
@@ -24,5 +37,11 @@ export default {
   text-align: center;
   color: #2c3e50;
   margin-top: 60px;
+}
+.transparent {
+  position: absolute;
+  top: -99999px;
+  left: -99999px;
+  opacity: 0;
 }
 </style>

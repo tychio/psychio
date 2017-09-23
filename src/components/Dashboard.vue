@@ -4,7 +4,7 @@
     <h1 class="md-display-2">PsychIO</h1>
     <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
   </section>
-  <section class="container">
+  <section class="container" ref="container">
     <div v-for="(item, index) in list" v-if="current >= index" v-show="current <= index">
       <component :is="item.type" :item="item" @end="next"
       ></component>
@@ -14,6 +14,7 @@
 </template>
 
 <script>
+import * as screenfull from 'screenfull'
 import PictureNaming from './PictureNaming'
 
 export default {
@@ -25,12 +26,12 @@ export default {
         {
           type: 'picture-naming',
           name: 'tiger',
-          url: 'http://lorempixel.com/400/200/animals/3/'
+          src: 'act020bow'
         },
         {
           type: 'picture-naming',
           name: 'dog',
-          url: 'http://lorempixel.com/400/200/animals/8/'
+          src: 'act045conduct'
         }
       ]
     }
@@ -39,6 +40,9 @@ export default {
   methods: {
     play: function () {
       this.current = -1
+      if (screenfull.enabled) {
+        screenfull.request(this.$refs.container)
+      }
       this.$nextTick(() => {
         this.next()
       })
