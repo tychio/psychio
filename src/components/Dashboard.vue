@@ -4,7 +4,9 @@
     <h1 class="md-display-2">PsychIO</h1>
     <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
   </section>
-  <section class="container" ref="container">
+  <section :class="['container', {
+    'processing': current >= 0
+  }]" ref="container">
     <div v-for="(item, index) in list" v-if="current >= index" v-show="current <= index">
       <component :is="item.type" :item="item" @end="next"
       ></component>
@@ -49,7 +51,6 @@ export default {
     },
     next: function () {
       this.current++
-      console.log(this.current)
     }
   },
   components: {
@@ -61,6 +62,11 @@ export default {
 <style>
 .container {
   overflow: hidden;
-  margin: 10px;
+  height: 100%;
+  width: 100%;
+}
+
+.container.processing {
+  background: #ccc;
 }
 </style>
