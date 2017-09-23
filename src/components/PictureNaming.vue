@@ -13,11 +13,15 @@ export default {
   props: ['item'],
   data: function () {
     return {
-      status: null
+      status: null,
+      result: {}
     }
   },
   watch: {
     status: function () {
+      if (this.status === 'end') {
+        this.$emit('end', this.result)
+      }
     }
   },
   mounted: function () {

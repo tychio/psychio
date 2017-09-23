@@ -35,7 +35,8 @@ export default {
           name: 'dog',
           src: 'act045conduct'
         }
-      ]
+      ],
+      results: []
     }
     return data
   },
@@ -46,11 +47,16 @@ export default {
         screenfull.request(this.$refs.container)
       }
       this.$nextTick(() => {
-        this.next()
+        this.current = 0
       })
     },
-    next: function () {
-      this.current++
+    next: function (result) {
+      if (result) {
+        this.results.push(result)
+        setTimeout(() => {
+          this.current++
+        }, 2000)
+      }
     }
   },
   components: {
