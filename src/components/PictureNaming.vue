@@ -9,6 +9,7 @@
 </template>
 
 <script>
+import MediaStreamRecorder from 'msr'
 const SpeechRecognition = window.webkitSpeechRecognition
 export default {
   name: 'PictureNaming',
@@ -17,23 +18,47 @@ export default {
     return {
       startDate: 0,
       status: null,
-      result: {},
-      recognition: new SpeechRecognition()
+      result: {
+        name: this.item.name,
+        response: 0,
+        record: null
+      },
+      recognition: new SpeechRecognition(),
+      media: null
     }
   },
   watch: {
     status: function () {
       if (this.status === 'end') {
         this.recognition.onspeechstart = () => {}
+        this.media.stop()
         this.$emit('end', this.result)
       } else if (this.status === 'playing') {
         this.startDate = new Date()
+        this.media.start(4000)
       } else if (this.status === 'ready') {
         this.recognition.start()
       }
     }
   },
+  methods: {
+    loadRecorder: function () {
+      navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia
+      navigator.getUserMedia({
+        audio: true
+      }, stream => {
+        this.media = new MediaStreamRecorder(stream)
+        this.media.mimeType = 'audio/wav'
+        this.media.ondataavailable = blob => {
+          this.result.record = blob
+        }
+      }, error => {
+        console.error('media error', error)
+      })
+    }
+  },
   mounted: function () {
+    this.loadRecorder()
     const steps = [1000, 500, 4000]
     this.recognition.onspeechstart = () => {
       this.status = 'saying'

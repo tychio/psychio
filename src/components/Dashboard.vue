@@ -43,6 +43,7 @@ export default {
   methods: {
     play: function () {
       this.current = -1
+      this.results = []
       if (screenfull.enabled) {
         screenfull.request(this.$refs.container)
       }
@@ -53,9 +54,16 @@ export default {
     next: function (result) {
       if (result) {
         this.results.push(result)
-        setTimeout(() => {
-          this.current++
-        }, 2000)
+
+        if (this.current === this.list.length - 1) {
+          this.current = -1
+          screenfull.exit()
+          console.log(this.results)
+        } else {
+          setTimeout(() => {
+            this.current++
+          }, 2000)
+        }
       }
     }
   },
