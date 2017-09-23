@@ -4,28 +4,44 @@
       'background-image': 'url(./static/pictures/' + item.src + '.gif)'
     }"></div>
     <i class="icon icon-cross"></i>
+    <i class="icon icon-dot"></i>
   </div>
 </template>
 
 <script>
+const SpeechRecognition = window.webkitSpeechRecognition
 export default {
   name: 'PictureNaming',
   props: ['item'],
   data: function () {
     return {
+      startDate: 0,
       status: null,
-      result: {}
+      result: {},
+      recognition: new SpeechRecognition()
     }
   },
   watch: {
     status: function () {
       if (this.status === 'end') {
+        this.recognition.onspeechstart = () => {}
         this.$emit('end', this.result)
+      } else if (this.status === 'playing') {
+        this.startDate = new Date()
+      } else if (this.status === 'ready') {
+        this.recognition.start()
       }
     }
   },
   mounted: function () {
     const steps = [1000, 500, 4000]
+    this.recognition.onspeechstart = () => {
+      this.status = 'saying'
+      if (this.startDate) {
+        this.result.response = new Date() - this.startDate
+        this.startDate = null
+      }
+    }
     this.status = 'start'
     setTimeout(() => {
       this.status = 'ready'
@@ -73,12 +89,18 @@ export default {
   font-size: 100px;
 }
 
-.stage-start i.icon.icon-cross {
-  display: block;
+i.icon.icon-cross:before {
+  content: '+';
 }
 
-.stage-start i.icon.icon-cross:before {
-  content: '+';
+i.icon.icon-dot:before {
+  content: '\00b7';
+  font-size: 200px;
+}
+
+.stage-saying i.icon.icon-dot,
+.stage-start i.icon.icon-cross {
+  display: block;
 }
 
 .stage-playing .stage-pic {
