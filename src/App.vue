@@ -38,7 +38,8 @@ export default {
           'act043comb',
           'act045conduct',
           'act047cough',
-          'act050crawl'
+          'act050crawl',
+          'act052cry'
         ]
       }
     }

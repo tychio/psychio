@@ -7,7 +7,7 @@
         <label>Test Type/测试类型</label>
         <md-select name="type" v-model="type">
           <md-option value="picture-naming">Picture Naming/图片命名</md-option>
-          <md-option value="real-word">Real Word/真假字</md-option>
+          <md-option value="lexical-decision">Lexical Decision/词汇判断</md-option>
         </md-select>
       </md-input-container>
     </form>
@@ -60,7 +60,6 @@ export default {
         if (this.current === this.list.length - 1) {
           this.current = -1
           screenfull.exit()
-          console.log(this.results)
         } else {
           setTimeout(() => {
             this.current++
@@ -75,19 +74,45 @@ export default {
       return this[methodName]()
     },
     randomPictures: function () {
-      const randomSort = () => _.random(0, 1, true) > 0.5
       const languages = ['uyghur', 'chinese']
-      const count = Math.round(this.items.length / languages.length)
-      const languageList = _.flatMap(languages, lang => _.fill(Array(count), lang))
+      const length = languages.length
+      const count = Math.round(this.items.length / (length * length))
+      const lines = []
+      for (let from = 0; from < length; from++) {
+        for (let to = 0; to < length; to++) {
+          lines.push({
+            count: count,
+            direction: [from, to]
+          })
+        }
+      }
       return _.chain(this.items)
-        .sortBy(randomSort)
-        .map(item => {
-          const index = _.random(0, languageList.length - 1)
-          return {
-            name: item,
-            language: languageList.splice(index, 1)[0]
+        .sortBy(() => _.random(0, 1, true) > 0.5)
+        .reduce((items, item) => {
+          const lastOne = items.length > 0 ? items[items.length - 1] : {}
+          const lastLangIndex = languages.indexOf(lastOne.language)
+          let language = _.sample(languages)
+          if (lastLangIndex >= 0) {
+            const randomLine = _.sample(_.filter(lines, line => {
+              const fromIndex = line.direction[0]
+              const matchFrom = fromIndex === lastLangIndex
+              let hasCount = line.count > 0
+              const turned = fromIndex !== line.direction[1]
+              if (turned) {
+                const currentDirection = _.find(lines, line => line.direction.join('|') === [fromIndex, fromIndex].join('|'))
+                hasCount = line.count > 1 || (line.count === 1 && currentDirection.count === 0)
+              }
+              return hasCount && matchFrom
+            }))
+            randomLine.count--
+            language = languages[randomLine.direction[1]]
           }
-        }).value()
+          items.push({
+            name: item,
+            language: language
+          })
+          return items
+        }, []).value()
     }
   },
   computed: {
