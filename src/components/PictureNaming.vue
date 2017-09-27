@@ -1,7 +1,7 @@
 <template>
   <div v-show="status" :class="['stage', 'stage-' + status]">
     <div class="stage-pic" :style="{
-      'background-image': 'url(./static/pictures/' + item.src + '.gif)'
+      'background-image': 'url(./static/pictures/' + item.name + '.gif)'
     }"></div>
     <i class="icon icon-cross"></i>
     <i class="icon icon-dot"></i>

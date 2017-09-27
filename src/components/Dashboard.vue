@@ -16,26 +16,17 @@
 </template>
 
 <script>
+import * as _ from 'lodash'
 import * as screenfull from 'screenfull'
 import PictureNaming from './PictureNaming'
 
 export default {
   name: 'Dashboard',
+  props: ['items'],
   data () {
     let data = {
       current: -1,
-      list: [
-        {
-          type: 'picture-naming',
-          name: 'tiger',
-          src: 'act020bow'
-        },
-        {
-          type: 'picture-naming',
-          name: 'dog',
-          src: 'act045conduct'
-        }
-      ],
+      list: [],
       results: []
     }
     return data
@@ -47,6 +38,7 @@ export default {
       if (screenfull.enabled) {
         screenfull.request(this.$refs.container)
       }
+      this.list = this.getList()
       this.$nextTick(() => {
         this.current = 0
       })
@@ -65,6 +57,22 @@ export default {
           }, 2000)
         }
       }
+    },
+    getList: function () {
+      const randomSort = () => _.random(0, 1, true) > 0.5
+      const languages = ['uyghur', 'chinese']
+      const count = Math.round(this.items.length / languages.length)
+      const languageList = _.flatMap(languages, lang => _.fill(Array(count), lang))
+      return _.chain(this.items)
+        .sortBy(randomSort)
+        .map(item => {
+          const index = _.random(0, languageList.length - 1)
+          return {
+            type: 'picture-naming',
+            name: item,
+            language: languageList.splice(index, 1)[0]
+          }
+        }).value()
     }
   },
   components: {
