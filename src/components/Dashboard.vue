@@ -2,6 +2,15 @@
 <main class="phone-viewport">
   <section class="container">
     <h1 class="md-display-2">PsychIO</h1>
+    <form class="form">
+      <md-input-container>
+        <label>Test Type/测试类型</label>
+        <md-select name="type" v-model="type">
+          <md-option value="picture-naming">Picture Naming/图片命名</md-option>
+          <md-option value="real-word">Real Word/真假字</md-option>
+        </md-select>
+      </md-input-container>
+    </form>
     <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
   </section>
   <section :class="['container', {
@@ -101,5 +110,10 @@ export default {
 
 .container.processing {
   background: #ccc;
+}
+
+.form {
+  width: 480px;
+  margin: 0 auto;
 }
 </style>
