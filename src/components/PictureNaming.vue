@@ -5,6 +5,7 @@
     }"></div>
     <i class="icon icon-cross"></i>
     <i class="icon icon-dot"></i>
+    <i class="icon icon-lang">{{languageSay}}</i>
   </div>
 </template>
 
@@ -20,6 +21,7 @@ export default {
       status: null,
       result: {
         name: this.item.name,
+        language: this.item.language,
         response: 0,
         record: null
       },
@@ -57,9 +59,17 @@ export default {
       })
     }
   },
+  computed: {
+    languageSay: function () {
+      return {
+        chinese: '说',
+        uyghur: 'ئېيتماق'
+      }[this.item.language]
+    }
+  },
   mounted: function () {
     this.loadRecorder()
-    const steps = [1000, 500, 4000]
+    const steps = [1000, 500, 500, 4000]
     this.recognition.onspeechstart = () => {
       this.status = 'saying'
       if (this.startDate) {
@@ -72,11 +82,14 @@ export default {
       this.status = 'ready'
     }, steps[0])
     setTimeout(() => {
-      this.status = 'playing'
+      this.status = 'prompt'
     }, steps[0] + steps[1])
     setTimeout(() => {
-      this.status = 'end'
+      this.status = 'playing'
     }, steps[0] + steps[1] + steps[2])
+    setTimeout(() => {
+      this.status = 'end'
+    }, steps[0] + steps[1] + steps[2] + steps[3])
   }
 }
 </script>
@@ -123,6 +136,7 @@ i.icon.icon-dot:before {
   font-size: 200px;
 }
 
+.stage-prompt i.icon.icon-lang,
 .stage-saying i.icon.icon-dot,
 .stage-start i.icon.icon-cross {
   display: block;
