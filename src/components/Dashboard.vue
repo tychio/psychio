@@ -8,7 +8,7 @@
     'processing': current >= 0
   }]" ref="container">
     <div v-for="(item, index) in list" v-if="current >= index" v-show="current <= index">
-      <component :is="item.type" :item="item" @end="next"
+      <component :is="type" :item="item" @end="next"
       ></component>
     </div>
   </section>
@@ -22,9 +22,10 @@ import PictureNaming from './PictureNaming'
 
 export default {
   name: 'Dashboard',
-  props: ['items'],
+  props: ['design'],
   data () {
     let data = {
+      type: 'picture-naming',
       current: -1,
       list: [],
       results: []
@@ -38,7 +39,7 @@ export default {
       if (screenfull.enabled) {
         screenfull.request(this.$refs.container)
       }
-      this.list = this.getList()
+      this.list = this.random()
       this.$nextTick(() => {
         this.current = 0
       })
@@ -58,7 +59,13 @@ export default {
         }
       }
     },
-    getList: function () {
+    random: function () {
+      const methodName = {
+        'picture-naming': 'randomPictures'
+      }[this.type]
+      return this[methodName]()
+    },
+    randomPictures: function () {
       const randomSort = () => _.random(0, 1, true) > 0.5
       const languages = ['uyghur', 'chinese']
       const count = Math.round(this.items.length / languages.length)
@@ -68,11 +75,15 @@ export default {
         .map(item => {
           const index = _.random(0, languageList.length - 1)
           return {
-            type: 'picture-naming',
             name: item,
             language: languageList.splice(index, 1)[0]
           }
         }).value()
+    }
+  },
+  computed: {
+    items: function () {
+      return this.design[this.type]
     }
   },
   components: {

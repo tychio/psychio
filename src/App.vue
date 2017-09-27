@@ -1,10 +1,10 @@
 <template>
   <div id="app">
     <img src="./assets/logo.png">
-    <Dashboard :items="pictures"></Dashboard>
+    <Dashboard :design="designs"></Dashboard>
     <ul class="transparent">
-      <li v-for="pic in pictures">
-        <img :src="'./static/pictures/' + pic + '.gif'">
+      <li v-for="design in designs">
+        <img v-for="name in design" :src="'./static/pictures/' + name + '.gif'">
       </li>
     </ul>
   </div>
@@ -17,28 +17,30 @@ export default {
   name: 'app',
   data: function () {
     return {
-      pictures: [
-        'act015beg',
-        'act019bounce',
-        'act020bow',
-        'act022box',
-        'act024brush',
-        'act025buckle',
-        'act028pay',
-        'act030camp',
-        'act031carry',
-        'act032carve',
-        'act033catch',
-        'act035chase',
-        'act036cheer',
-        'act037chew',
-        'act038clap',
-        'act041slam',
-        'act043comb',
-        'act045conduct',
-        'act047cough',
-        'act050crawl'
-      ]
+      designs: {
+        'picture-naming': [
+          'act015beg',
+          'act019bounce',
+          'act020bow',
+          'act022box',
+          'act024brush',
+          'act025buckle',
+          'act028pay',
+          'act030camp',
+          'act031carry',
+          'act032carve',
+          'act033catch',
+          'act035chase',
+          'act036cheer',
+          'act037chew',
+          'act038clap',
+          'act041slam',
+          'act043comb',
+          'act045conduct',
+          'act047cough',
+          'act050crawl'
+        ]
+      }
     }
   },
   components: {
