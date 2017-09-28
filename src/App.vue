@@ -40,6 +40,29 @@ export default {
           'act047cough',
           'act050crawl',
           'act052cry'
+        ],
+        'lexical-decision': [
+          'act015beg',
+          'act019bounce',
+          'act020bow',
+          'act022box',
+          'act024brush',
+          'act025buckle',
+          'act028pay',
+          'act030camp',
+          'act031carry',
+          'act032carve',
+          'act033catch',
+          'act035chase',
+          'act036cheer',
+          'act037chew',
+          'act038clap',
+          'act041slam',
+          'act043comb',
+          'act045conduct',
+          'act047cough',
+          'act050crawl',
+          'act052cry'
         ]
       }
     }

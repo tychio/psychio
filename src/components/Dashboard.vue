@@ -28,6 +28,7 @@
 import * as _ from 'lodash'
 import * as screenfull from 'screenfull'
 import PictureNaming from './PictureNaming'
+import LexicalDecision from './LexicalDecision'
 
 export default {
   name: 'Dashboard',
@@ -69,9 +70,17 @@ export default {
     },
     random: function () {
       const methodName = {
-        'picture-naming': 'randomPictures'
+        'picture-naming': 'randomPictures',
+        'lexical-decision': 'randomLexical'
       }[this.type]
       return this[methodName]()
+    },
+    randomLexical: function () {
+      return _.map(this.items, item => {
+        return {
+          name: item
+        }
+      })
     },
     randomPictures: function () {
       const languages = ['uyghur', 'chinese']
@@ -121,7 +130,8 @@ export default {
     }
   },
   components: {
-    'picture-naming': PictureNaming
+    'picture-naming': PictureNaming,
+    'lexical-decision': LexicalDecision
   }
 }
 </script>
