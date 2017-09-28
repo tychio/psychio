@@ -23,9 +23,10 @@
   </section>
   <section class="container">
     <md-list>
-      <md-list-item v-for="result in results" 
+      <md-list-item v-for="(result, index) in results" 
         :href="blobUrl(result.record)"
         :target="'_blank'"
+        key="index"
       >
         <md-avatar>
           <img :src="'./static/pictures/' + result.name + '.gif'">
