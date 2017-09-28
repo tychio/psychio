@@ -38,7 +38,13 @@
         <md-avatar>
           <img :src="'./static/pictures/' + result.name + '.gif'">
         </md-avatar>
-        <span>{{result.name}} - ({{result.response}}ms) [{{result.language}}]</span>
+        <span>{{result.name}} - ({{result.response}}ms)</span>
+        <span v-if="result.language">[{{result.language}}]</span>
+        <template v-if="type === 'lexical-decision'">
+          <small>Choice/选择(Fact/实际)：{{result.right ? 'True/真' : 'False/假'}}({{!result.isNon ? 'True/真' : 'False/假'}})</small>
+          <md-icon v-if="result.right !== result.isNon" md-theme="green" class="md-primary">done</md-icon>
+          <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
+        </template>
       </md-list-item>
     </md-list>
   </section>
