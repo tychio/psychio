@@ -37,12 +37,17 @@ export default {
   },
   methods: {
     end: function (event) {
-      if (this.status === 'playing') {
+      if (!event) {
+        this.record()
+      } else if (this.status === 'playing') {
         clearTimeout(this.endTimeout)
         this.status = 'end'
-        this.result.response = new Date() - this.startDate
+        this.record()
         this.result.right = (event.keyCode === 13)
       }
+    },
+    record: function () {
+      this.result.response = new Date() - this.startDate
     }
   },
   mounted: function () {
