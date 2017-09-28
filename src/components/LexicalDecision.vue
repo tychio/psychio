@@ -19,6 +19,7 @@ export default {
       status: null,
       result: {
         name: this.item.name,
+        isNon: this.item.isNon,
         response: 0,
         right: false
       }
@@ -27,6 +28,7 @@ export default {
   watch: {
     status: function () {
       if (this.status === 'end') {
+        this.end()
         this.$emit('end', this.result)
       } else if (this.status === 'playing') {
         this.startDate = new Date()

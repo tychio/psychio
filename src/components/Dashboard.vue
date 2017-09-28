@@ -10,6 +10,13 @@
           <md-option value="lexical-decision">Lexical Decision/词汇判断</md-option>
         </md-select>
       </md-input-container>
+      <md-input-container v-if="type === 'lexical-decision'">
+        <label>Languages/语言</label>
+        <md-select name="type" v-model="language">
+          <md-option value="chinese">Chiese/中文</md-option>
+          <md-option value="uyghur">Uyghur/维文</md-option>
+        </md-select>
+      </md-input-container>
     </form>
     <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
   </section>
@@ -50,6 +57,7 @@ export default {
   data () {
     let data = {
       type: 'picture-naming',
+      language: 'chinese',
       current: -1,
       list: [],
       results: []
@@ -58,7 +66,7 @@ export default {
   },
   methods: {
     blobUrl: function (url) {
-      return URL.createObjectURL(url)
+      return url && URL.createObjectURL(url)
     },
     play: function () {
       this.current = -1
@@ -93,11 +101,21 @@ export default {
       return this[methodName]()
     },
     randomLexical: function () {
-      return _.map(this.items, item => {
+      const languageGroup = this.items[this.language]
+      const nonwords = _.map(languageGroup.nonwords, word => {
         return {
-          name: item
+          name: word,
+          isNon: true
         }
       })
+      const words = _.map(languageGroup.words, word => {
+        return {
+          name: word,
+          isNon: false
+        }
+      })
+      const allWords = _.concat(nonwords, words)
+      return _.sampleSize(allWords, allWords.length)
     },
     randomPictures: function () {
       const languages = ['uyghur', 'chinese']
