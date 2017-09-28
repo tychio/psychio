@@ -38,7 +38,7 @@
         <md-avatar>
           <img :src="'./static/pictures/' + result.name + '.gif'">
         </md-avatar>
-        <span>{{result.name}} - ({{result.response}}ms)</span>
+        <span>{{result.name}} - ({{result.response}}ms) [{{result.language}}]</span>
       </md-list-item>
     </md-list>
   </section>
@@ -89,7 +89,7 @@ export default {
         } else {
           setTimeout(() => {
             this.current++
-          }, 2000)
+          }, 500)
         }
       }
     },
