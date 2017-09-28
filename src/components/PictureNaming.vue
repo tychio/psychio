@@ -32,6 +32,7 @@ export default {
   watch: {
     status: function () {
       if (this.status === 'end') {
+        this.record()
         this.recognition.onspeechstart = () => {}
         this.media.stop()
         this.$emit('end', this.result)
@@ -57,6 +58,12 @@ export default {
       }, error => {
         console.error('media error', error)
       })
+    },
+    record: function () {
+      if (this.startDate) {
+        this.result.response = new Date() - this.startDate
+        this.startDate = null
+      }
     }
   },
   computed: {
@@ -72,10 +79,9 @@ export default {
     this.loadRecorder()
     const steps = [1000, 500, 500, 4000]
     this.recognition.onspeechstart = () => {
-      this.status = 'saying'
-      if (this.startDate) {
-        this.result.response = new Date() - this.startDate
-        this.startDate = null
+      if (this.status === 'playing') {
+        this.status = 'saying'
+        this.record()
       }
     }
     this.status = 'start'

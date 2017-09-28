@@ -21,6 +21,19 @@
       ></component>
     </div>
   </section>
+  <section class="container">
+    <md-list>
+      <md-list-item v-for="result in results" 
+        :href="blobUrl(result.record)"
+        :target="'_blank'"
+      >
+        <md-avatar>
+          <img :src="'./static/pictures/' + result.name + '.gif'">
+        </md-avatar>
+        <span>{{result.name}} - ({{result.response}}ms)</span>
+      </md-list-item>
+    </md-list>
+  </section>
 </main>
 </template>
 
@@ -43,6 +56,9 @@ export default {
     return data
   },
   methods: {
+    blobUrl: function (url) {
+      return URL.createObjectURL(url)
+    },
     play: function () {
       this.current = -1
       this.results = []
