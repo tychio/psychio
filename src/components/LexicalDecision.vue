@@ -5,6 +5,7 @@
     }"></div>
     <i class="icon icon-cross"></i>
     <i class="icon icon-dot"></i>
+    <input type="text" v-focus v-if="status === 'playing'" @keyup="end">
   </div>
 </template>
 
@@ -17,7 +18,9 @@ export default {
       startDate: 0,
       status: null,
       result: {
-        name: this.item.name
+        name: this.item.name,
+        response: 0,
+        right: false
       }
     }
   },
@@ -31,9 +34,13 @@ export default {
     }
   },
   methods: {
-    end: function () {
-      clearTimeout(this.endTimeout)
-      this.status = 'end'
+    end: function (event) {
+      if (this.status === 'playing') {
+        clearTimeout(this.endTimeout)
+        this.status = 'end'
+        this.result.response = new Date() - this.startDate
+        this.result.right = (event.keyCode === 13)
+      }
     }
   },
   mounted: function () {
@@ -48,6 +55,13 @@ export default {
     this.endTimeout = setTimeout(() => {
       this.status = 'end'
     }, steps[0] + steps[1] + steps[2])
+  },
+  directives: {
+    focus: {
+      inserted: function (el) {
+        setInterval(() => el.focus(), 50)
+      }
+    }
   }
 }
 </script>
