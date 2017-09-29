@@ -170,6 +170,14 @@ export default {
       return this.design[this.type]
     }
   },
+  watch: {
+    type: function () {
+      this.results = []
+    },
+    language: function () {
+      this.results = []
+    }
+  },
   components: {
     'picture-naming': PictureNaming,
     'lexical-decision': LexicalDecision
