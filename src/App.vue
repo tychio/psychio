@@ -4,11 +4,12 @@
     <Dashboard :design="designs"></Dashboard>
     <ul class="transparent">
       <li v-for="name in designs['picture-naming']">
-        <img :src="'./static/pictures/' + name + '.gif'">
+        <img :src="'./static/picture-naming/' + name">
       </li>
-      <li v-for="lang in designs['lexical-decision']">
-        <template v-for="kind in lang">
-          <img v-for="name in kind" :src="'./static/pictures/' + name + '.gif'">
+      <li v-for="(kinds, lang) in designs['lexical-decision']">
+        <template v-for="(items, kind) in kinds">
+          <img v-for="name in items"
+            :src="'./static/' + lang + '-' + kind + '/' + name">
         </template>
       </li>
     </ul>
@@ -24,23 +25,27 @@ export default {
     const json = `{
       "picture-naming": [
         "001", "002", "003", "004", "005", "006", "007", "008", "009", "010",
-        "061"
+        "011"
       ],
       "lexical-decision": {
         "chinese": {
           "words": [
-            "101", "102", "103", "104", "105", "106", "107", "108", "109", "110"
+            "001", "002", "003", "004", "005", "006", "007", "008", "009", "010",
+            "011"
           ],
           "nonwords": [
-            "131", "132", "133", "134", "135", "136", "137", "138", "139", "140"
+            "001", "002", "003", "004", "005", "006", "007", "008", "009", "010",
+            "011"
           ]
         },
         "uyghur": {  
           "words": [
-            "161", "162", "163", "164", "165", "166", "167", "168", "169", "170"
+            "001", "002", "003", "004", "005", "006", "007", "008", "009", "010",
+            "011"
           ],
           "nonwords": [
-            "191", "192", "193", "194", "195", "196", "197", "198", "199", "200"
+            "001", "002", "003", "004", "005", "006", "007", "008", "009", "010",
+            "011"
           ]
         }
       }

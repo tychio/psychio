@@ -1,7 +1,7 @@
 <template>
   <div v-show="status" :class="['stage', 'stage-' + status]">
     <div class="stage-pic" :style="{
-      'background-image': 'url(./static/pictures/' + item.name + '.gif)'
+      'background-image': 'url(' + imageSrc + ')'
     }"></div>
     <i class="icon icon-cross"></i>
     <i class="icon icon-dot"></i>
@@ -12,7 +12,7 @@
 <script>
 export default {
   name: 'LexicalDecision',
-  props: ['item'],
+  props: ['item', 'language'],
   data: function () {
     return {
       startDate: 0,
@@ -21,7 +21,8 @@ export default {
         name: this.item.name,
         isNon: this.item.isNon,
         response: 0,
-        right: false
+        right: false,
+        src: ''
       }
     }
   },
@@ -48,6 +49,13 @@ export default {
     },
     record: function () {
       this.result.response = new Date() - this.startDate
+      this.result.src = this.imageSrc
+      this.startDate = 0
+    }
+  },
+  computed: {
+    imageSrc: function () {
+      return './static/lexical-decision/' + this.language + '-' + (this.item.isNon ? 'nonwords' : 'words') + '/' + this.item.name + '.png'
     }
   },
   mounted: function () {

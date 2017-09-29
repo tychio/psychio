@@ -24,7 +24,7 @@
     'processing': current >= 0
   }]" ref="container">
     <div v-for="(item, index) in list" v-if="current >= index" v-show="current <= index">
-      <component :is="type" :item="item" @end="next"
+      <component :is="type" :item="item" :language="language" @end="next"
       ></component>
     </div>
   </section>
@@ -36,7 +36,7 @@
         key="index"
       >
         <md-avatar>
-          <img :src="'./static/pictures/' + result.name + '.gif'">
+          <img :src="result.src">
         </md-avatar>
         <span>{{result.name}} - ({{result.response}}ms)</span>
         <span v-if="result.language">[{{result.language}}]</span>

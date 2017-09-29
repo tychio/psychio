@@ -1,7 +1,7 @@
 <template>
   <div v-show="status" :class="['stage', 'stage-' + status]">
     <div class="stage-pic" :style="{
-      'background-image': 'url(./static/pictures/' + item.name + '.gif)'
+      'background-image': 'url(' + imageSrc + ')'
     }"></div>
     <i class="icon icon-cross"></i>
     <i class="icon icon-dot"></i>
@@ -14,7 +14,7 @@ import MediaStreamRecorder from 'msr'
 const SpeechRecognition = window.webkitSpeechRecognition
 export default {
   name: 'PictureNaming',
-  props: ['item'],
+  props: ['item', 'language'],
   data: function () {
     return {
       startDate: 0,
@@ -23,7 +23,8 @@ export default {
         name: this.item.name,
         language: this.item.language,
         response: 0,
-        record: null
+        record: null,
+        src: ''
       },
       recognition: new SpeechRecognition(),
       media: null
@@ -62,7 +63,8 @@ export default {
     record: function () {
       if (this.startDate) {
         this.result.response = new Date() - this.startDate
-        this.startDate = null
+        this.result.src = this.imageSrc
+        this.startDate = 0
       }
     }
   },
@@ -73,6 +75,9 @@ export default {
         uyghur: 'ئېيتماق',
         english: 'Say'
       }[this.item.language]
+    },
+    imageSrc: function () {
+      return './static/pictures/' + this.item.name + '.gif'
     }
   },
   mounted: function () {
