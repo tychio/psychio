@@ -33,9 +33,9 @@ export default {
   watch: {
     status: function () {
       if (this.status === 'end') {
-        this.record()
         this.recognition.onspeechstart = () => {}
         this.media.stop()
+        this.record()
         this.$emit('end', this.result)
       } else if (this.status === 'playing') {
         this.startDate = new Date()
@@ -60,11 +60,12 @@ export default {
         console.error('media error', error)
       })
     },
-    record: function () {
+    record: function (callback) {
       if (this.startDate) {
         this.result.response = new Date() - this.startDate
         this.result.src = this.imageSrc
         this.startDate = 0
+        callback && callback()
       }
     }
   },
@@ -84,9 +85,16 @@ export default {
     this.loadRecorder()
     const steps = [1000, 500, 500, 4000]
     this.recognition.onspeechstart = () => {
+      console.log(this.status)
       if (this.status === 'playing') {
-        this.status = 'saying'
-        this.record()
+        this.record(() => {
+          this.status = 'saying'
+        })
+      } else {
+        const onspeechstart = this.recognition.onspeechstart
+        this.recognition = new SpeechRecognition()
+        this.recognition.onspeechstart = onspeechstart
+        this.recognition.start()
       }
     }
     this.status = 'start'
