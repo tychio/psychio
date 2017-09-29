@@ -48,9 +48,11 @@ export default {
       }
     },
     record: function () {
-      this.result.response = new Date() - this.startDate
-      this.result.src = this.imageSrc
-      this.startDate = 0
+      if (this.startDate) {
+        this.result.response = new Date() - this.startDate
+        this.result.src = this.imageSrc
+        this.startDate = 0
+      }
     }
   },
   computed: {
