@@ -77,7 +77,7 @@ export default {
       }[this.item.language]
     },
     imageSrc: function () {
-      return './static/pictures/' + this.item.name + '.gif'
+      return './static/picture-naming/' + this.item.name + '.gif'
     }
   },
   mounted: function () {
