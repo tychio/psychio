@@ -79,6 +79,11 @@ export default {
       this.results = []
       if (screenfull.enabled) {
         screenfull.request(this.$refs.container)
+        screenfull.onchange(event => {
+          if (!screenfull.isFullscreen) {
+            this.current = -1
+          }
+        })
       }
       this.list = this.random()
       this.$nextTick(() => {
