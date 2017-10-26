@@ -130,44 +130,80 @@ export default {
     },
     randomPictures: function () {
       const languages = ['uyghur', 'chinese']
-      const length = languages.length
-      const count = Math.round(this.items.length / (length * length))
-      const lines = []
-      for (let from = 0; from < length; from++) {
-        for (let to = 0; to < length; to++) {
-          lines.push({
-            count: count,
-            direction: [from, to]
-          })
-        }
-      }
-      return _.chain(this.items)
-        .sortBy(() => _.random(0, 1, true) > 0.5)
-        .reduce((items, item) => {
-          const lastOne = items.length > 0 ? items[items.length - 1] : {}
-          const lastLangIndex = languages.indexOf(lastOne.language)
-          let language = _.sample(languages)
-          if (lastLangIndex >= 0) {
-            const randomLine = _.sample(_.filter(lines, line => {
-              const fromIndex = line.direction[0]
-              const matchFrom = fromIndex === lastLangIndex
-              let hasCount = line.count > 0
-              const turned = fromIndex !== line.direction[1]
-              if (turned) {
-                const currentDirection = _.find(lines, line => line.direction.join('|') === [fromIndex, fromIndex].join('|'))
-                hasCount = line.count > 1 || (line.count === 1 && currentDirection.count === 0)
-              }
-              return hasCount && matchFrom
-            }))
-            randomLine.count--
-            language = languages[randomLine.direction[1]]
+      const another = {}
+      another[languages[0]] = languages[1]
+      another[languages[1]] = languages[0]
+      const imgGroups = this.groupImages(this.items)
+      let languagesCount = _.size(_.flatten(imgGroups))
+      let changeLanguagesCount = _.round(languagesCount / 2)
+      const itemGroups = _.map(imgGroups, imgGroup => {
+        let languageName = 'chinese'
+        return _.map(imgGroup, (image, index) => {
+          let isChange = false
+          const randomValue = _.random(true)
+          if (randomValue < (changeLanguagesCount / languagesCount)) {
+            languageName = another[languageName]
+            changeLanguagesCount--
+            isChange = true
           }
-          items.push({
-            name: item,
-            language: language
-          })
-          return items
-        }, []).value()
+          languagesCount--
+          const item = {
+            name: image,
+            language: languageName,
+            isEnd: imgGroup.length === (index + 1),
+            isChange: isChange
+          }
+          console.log(item, index)
+          return item
+        })
+      })
+      return _.flatten(itemGroups)
+    },
+    groupImages: function (imgs) {
+      const SECTION_COUNT = 8
+      const RANGE = 4
+      const imageCountInGroup = imgs.length
+      const minRange = imageCountInGroup - RANGE
+      const maxRange = imageCountInGroup + RANGE
+      let left = 0
+      const groups = _.chain(Array(SECTION_COUNT)).map((val, index) => {
+        return (function () {
+          let min = minRange
+          let max = maxRange
+          if (left > 0) {
+            min += left
+          } else {
+            max += left
+          }
+          if (index + 1 === SECTION_COUNT) {
+            return imageCountInGroup + left
+          } else {
+            const size = _.random(min, max)
+            left += (imageCountInGroup - size)
+            return size
+          }
+        })()
+      }).sortBy(size => size).value()
+      console.log(groups)
+      console.log(_.sum(groups))
+      const pool = _.flatten(_.fill(Array(SECTION_COUNT), imgs))
+      let currentIndex = 0
+      const results = _.map(groups, count => {
+        const result = _.slice(pool, currentIndex, currentIndex + count)
+        currentIndex += count
+        let gap = []
+        const randomResult = _.sampleSize(result, count)
+        console.log(randomResult)
+        const sortedResult = _.sortBy(randomResult, item => {
+          const includes = _.includes(_.slice(gap, 0, 3), item)
+          gap.unshift(item)
+          return includes
+        })
+        console.log(sortedResult)
+        return sortedResult
+      })
+      console.log(results)
+      return results
     }
   },
   computed: {

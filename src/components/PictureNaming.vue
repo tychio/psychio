@@ -5,13 +5,17 @@
     }"></div>
     <i class="icon icon-cross"></i>
     <i class="icon icon-dot"></i>
+    <i class="icon icon-asterisk"></i>
     <i class="icon icon-lang">{{languageSay}}</i>
   </div>
 </template>
 
 <script>
+import * as _ from 'lodash'
 import MediaStreamRecorder from 'msr'
+
 const SpeechRecognition = window.webkitSpeechRecognition
+
 export default {
   name: 'PictureNaming',
   props: ['item', 'language'],
@@ -62,7 +66,7 @@ export default {
     },
     record: function (callback) {
       if (this.startDate) {
-        this.result.response = new Date() - this.startDate
+        this.result.response = _.min([4000, new Date() - this.startDate])
         this.result.src = this.imageSrc
         this.startDate = 0
         callback && callback()
@@ -84,6 +88,9 @@ export default {
   mounted: function () {
     this.loadRecorder()
     const steps = [1000, 500, 500, 4000]
+    if (this.item.isEnd) {
+      steps.push(1000)
+    }
     this.recognition.onspeechstart = () => {
       console.log(this.status)
       if (this.status === 'playing') {
@@ -103,13 +110,18 @@ export default {
     }, steps[0])
     setTimeout(() => {
       this.status = 'prompt'
-    }, steps[0] + steps[1])
+    }, _.sum(_.slice(steps, 0, 2)))
     setTimeout(() => {
       this.status = 'playing'
-    }, steps[0] + steps[1] + steps[2])
+    }, _.sum(_.slice(steps, 0, 3)))
+    if (this.item.isEnd) {
+      setTimeout(() => {
+        this.status = 'group'
+      }, _.sum(_.slice(steps, 0, 4)))
+    }
     setTimeout(() => {
       this.status = 'end'
-    }, steps[0] + steps[1] + steps[2] + steps[3])
+    }, _.sum(steps))
   }
 }
 </script>
@@ -150,6 +162,9 @@ export default {
 i.icon.icon-cross:before {
   content: '+';
 }
+i.icon.icon-asterisk:before {
+  content: '*';
+}
 
 i.icon.icon-dot:before {
   content: '\00b7';
@@ -158,6 +173,7 @@ i.icon.icon-dot:before {
 
 .stage-prompt i.icon.icon-lang,
 .stage-saying i.icon.icon-dot,
+.stage-group i.icon-asterisk,
 .stage-start i.icon.icon-cross {
   display: block;
 }
