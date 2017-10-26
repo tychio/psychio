@@ -135,24 +135,36 @@ export default {
       another[languages[0]] = languages[1]
       another[languages[1]] = languages[0]
       const imgGroups = this.groupImages(this.items)
-      let languagesCount = _.size(_.flatten(imgGroups))
-      let changeLanguagesCount = _.round(languagesCount / 2)
+      let imagesCount = _.size(_.flatten(imgGroups))
+      let changeLanguagesCount = _.round((imagesCount - imgGroups.length) / 2)
       const itemGroups = _.map(imgGroups, imgGroup => {
-        let languageName = 'chinese'
+        let languageName = languages[_.random()]
         return _.map(imgGroup, (image, index) => {
-          let isChange = false
-          const randomValue = _.random(true)
-          if (randomValue < (changeLanguagesCount / languagesCount)) {
-            languageName = another[languageName]
-            changeLanguagesCount--
-            isChange = true
+          let isChange = null
+          if (index > 0) {
+            isChange = false
           }
-          languagesCount--
+          if (isChange !== null) {
+            const randomValue = _.random(true)
+            if (randomValue < (changeLanguagesCount / imagesCount)) {
+              languageName = another[languageName]
+              changeLanguagesCount--
+              isChange = true
+            }
+          }
+          imagesCount--
           const item = {
             name: image,
             language: languageName,
             isEnd: imgGroup.length === (index + 1),
             isChange: isChange
+          }
+          if (isChange) {
+            console.count('Changed from ' + another[languageName] + ' to ' + languageName)
+          } else if (isChange === false) {
+            console.count('Keep ' + languageName)
+          } else {
+            console.count('First ' + languageName)
           }
           return item
         })
