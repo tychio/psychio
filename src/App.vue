@@ -9,7 +9,7 @@
       <li v-for="(kinds, lang) in designs['lexical-decision']">
         <template v-for="(items, kind) in kinds">
           <img v-for="name in items"
-            :src="'./static/' + lang + '-' + kind + '/' + name">
+            :src="'./static/lexical-decision/' + lang + '-' + kind + '/' + name + '.png'">
         </template>
       </li>
     </ul>
