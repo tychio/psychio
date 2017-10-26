@@ -129,22 +129,44 @@ export default {
       const allWords = _.concat(nonwords, words)
       return _.sampleSize(allWords, allWords.length)
     },
+    logPictures: function (randomItemGroups) {
+      _.each(randomItemGroups, itemGroup => {
+        console.group('=========================================')
+        _.each(itemGroup, item => {
+          console.group('---------------------')
+          console.log('picture name:', item.name)
+          console.log('language:', item.language)
+          if (item.isChange) {
+            console.log('Changed')
+          } else {
+            console.log('Not changed')
+          }
+          console.groupEnd('---------------------')
+        })
+        console.groupEnd('<=========================================>')
+      })
+    },
     randomPictures: function () {
+      const uyghurGroups = this.randomPictureGroup('uyghur', this.groupImages(this.items))
+      const ChineseGroups = this.randomPictureGroup('chinese', this.groupImages(this.items))
+      this.logPictures(uyghurGroups)
+      this.logPictures(ChineseGroups)
+      return _.flattenDeep([uyghurGroups, ChineseGroups])
+    },
+    randomPictureGroup: function (languageName, imgGroups) {
       const languages = ['uyghur', 'chinese']
       const another = {}
       another[languages[0]] = languages[1]
       another[languages[1]] = languages[0]
-      const imgGroups = _.flatten([this.groupImages(this.items), this.groupImages(this.items)])
       let imagesCount = _.size(_.flatten(imgGroups))
       const pairCount = imagesCount - imgGroups.length
       let changeLanguagesCount = _.round((pairCount) * 0.7)
       const keepLanguagesCount = _.round((pairCount - changeLanguagesCount) * 0.5)
       const keepLanguagesCounter = {}
-      _.each(languages, languageName => {
-        keepLanguagesCounter[languageName] = keepLanguagesCount
+      _.each(languages, langName => {
+        keepLanguagesCounter[langName] = keepLanguagesCount
       })
       const itemGroups = _.map(imgGroups, (imgGroup, groupIndex) => {
-        let languageName = languages[groupIndex > this.SECTION_COUNT ? 1 : 0]
         return _.map(imgGroup, (image, index) => {
           let isChange = null
           if (index > 0) {
@@ -180,25 +202,7 @@ export default {
           return item
         })
       })
-      const randomItemGroups = _.sampleSize(itemGroups, this.SECTION_COUNT)
-
-      _.each(randomItemGroups, itemGroup => {
-        console.group('=========================================')
-        _.each(itemGroup, item => {
-          console.group('---------------------')
-          console.log('picture name:', item.name)
-          console.log('language:', item.language)
-          if (item.isChange) {
-            console.log('Changed')
-          } else {
-            console.log('Not changed')
-          }
-          console.groupEnd('---------------------')
-        })
-        console.groupEnd('<=========================================>')
-      })
-
-      return _.flatten(randomItemGroups)
+      return _.sampleSize(itemGroups, this.SECTION_COUNT)
     },
     groupImages: function (imgs) {
       const RANGE = 4
