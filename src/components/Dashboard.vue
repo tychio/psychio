@@ -130,44 +130,71 @@ export default {
     },
     randomPictures: function () {
       const languages = ['uyghur', 'chinese']
-      const length = languages.length
-      const count = Math.round(this.items.length / (length * length))
-      const lines = []
-      for (let from = 0; from < length; from++) {
-        for (let to = 0; to < length; to++) {
-          lines.push({
-            count: count,
-            direction: [from, to]
-          })
-        }
-      }
-      return _.chain(this.items)
-        .sortBy(() => _.random(0, 1, true) > 0.5)
-        .reduce((items, item) => {
-          const lastOne = items.length > 0 ? items[items.length - 1] : {}
-          const lastLangIndex = languages.indexOf(lastOne.language)
-          let language = _.sample(languages)
-          if (lastLangIndex >= 0) {
-            const randomLine = _.sample(_.filter(lines, line => {
-              const fromIndex = line.direction[0]
-              const matchFrom = fromIndex === lastLangIndex
-              let hasCount = line.count > 0
-              const turned = fromIndex !== line.direction[1]
-              if (turned) {
-                const currentDirection = _.find(lines, line => line.direction.join('|') === [fromIndex, fromIndex].join('|'))
-                hasCount = line.count > 1 || (line.count === 1 && currentDirection.count === 0)
-              }
-              return hasCount && matchFrom
-            }))
-            randomLine.count--
-            language = languages[randomLine.direction[1]]
+      const another = {}
+      another[languages[0]] = languages[1]
+      another[languages[1]] = languages[0]
+      const imgGroups = this.groupImages(this.items)
+      let languagesCount = _.size(_.flatten(imgGroups))
+      let changeLanguagesCount = _.round(languagesCount / 2)
+      let isChange = false
+      const itemGroups = _.map(imgGroups, imgGroup => {
+        return _.map(imgGroup, (image, index) => {
+          let languageName = 'chinese'
+          const randomValue = _.random(true)
+          if (randomValue < (changeLanguagesCount / languagesCount)) {
+            languageName = another[languageName]
+            changeLanguagesCount--
+            isChange = true
           }
-          items.push({
-            name: item,
-            language: language
-          })
-          return items
-        }, []).value()
+          languagesCount--
+          const item = {
+            name: image,
+            language: languageName,
+            isEnd: imgGroup.length === (index + 1),
+            isChange: isChange
+          }
+          console.log(item, index, changeLanguagesCount, languagesCount, randomValue)
+          return item
+        })
+      })
+      return _.flatten(itemGroups)
+    },
+    groupImages: function (imgs) {
+      const SECTION_COUNT = 8
+      const RANGE = 4
+      const changeCount = imgs.length
+      const minRange = changeCount - RANGE
+      const maxRange = changeCount + RANGE
+      let left = 0
+      const groups = _.map(Array(SECTION_COUNT), (val, index) => {
+        return (function () {
+          let min = minRange
+          let max = maxRange
+          if (left > 0) {
+            min += left
+          } else {
+            max += left
+          }
+          if (index + 1 === SECTION_COUNT) {
+            return changeCount + left
+          } else {
+            const size = _.random(min, max)
+            left += (changeCount - size)
+            return size
+          }
+        })()
+      })
+      console.log(_.sum(groups))
+      return _.map(groups, count => {
+        let result
+        if (count > changeCount) {
+          result = _.sampleSize(_.concat(imgs, _.flatten([_.sampleSize(imgs, count % changeCount)])), count)
+        } else {
+          result = _.sampleSize(imgs, count)
+        }
+        console.log(count, result)
+        return result
+      })
     }
   },
   computed: {
