@@ -67,7 +67,7 @@ export default {
       current: -1,
       list: [],
       results: [],
-      SECTION_COUNT: 8
+      SECTION_COUNT: 4
     }
     return data
   },
@@ -134,11 +134,17 @@ export default {
       const another = {}
       another[languages[0]] = languages[1]
       another[languages[1]] = languages[0]
-      const imgGroups = this.groupImages(this.items)
+      const imgGroups = _.flatten([this.groupImages(this.items), this.groupImages(this.items)])
       let imagesCount = _.size(_.flatten(imgGroups))
-      let changeLanguagesCount = _.round((imagesCount - imgGroups.length) / 2)
-      const itemGroups = _.map(imgGroups, imgGroup => {
-        let languageName = languages[_.random()]
+      const pairCount = imagesCount - imgGroups.length
+      let changeLanguagesCount = _.round((pairCount) * 0.7)
+      const keepLanguagesCount = _.round((pairCount - changeLanguagesCount) * 0.5)
+      const keepLanguagesCounter = {}
+      _.each(languages, languageName => {
+        keepLanguagesCounter[languageName] = keepLanguagesCount
+      })
+      const itemGroups = _.map(imgGroups, (imgGroup, groupIndex) => {
+        let languageName = languages[groupIndex > this.SECTION_COUNT ? 1 : 0]
         return _.map(imgGroup, (image, index) => {
           let isChange = null
           if (index > 0) {
@@ -146,10 +152,15 @@ export default {
           }
           if (isChange !== null) {
             const randomValue = _.random(true)
-            if (randomValue < (changeLanguagesCount / imagesCount)) {
+            const shouldChange = randomValue < (changeLanguagesCount / imagesCount)
+            const canNotKeep = keepLanguagesCounter[languageName] === 0
+            const mustKeep = changeLanguagesCount === 1 && keepLanguagesCounter[languageName] > 0
+            if (!mustKeep && (shouldChange || canNotKeep)) {
               languageName = another[languageName]
               changeLanguagesCount--
               isChange = true
+            } else {
+              keepLanguagesCounter[languageName]--
             }
           }
           imagesCount--
