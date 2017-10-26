@@ -66,7 +66,7 @@ export default {
     },
     record: function (callback) {
       if (this.startDate) {
-        this.result.response = new Date() - this.startDate
+        this.result.response = _.min([4000, new Date() - this.startDate])
         this.result.src = this.imageSrc
         this.startDate = 0
         callback && callback()
