@@ -136,10 +136,10 @@ export default {
       const imgGroups = this.groupImages(this.items)
       let languagesCount = _.size(_.flatten(imgGroups))
       let changeLanguagesCount = _.round(languagesCount / 2)
-      let isChange = false
       const itemGroups = _.map(imgGroups, imgGroup => {
+        let languageName = 'chinese'
         return _.map(imgGroup, (image, index) => {
-          let languageName = 'chinese'
+          let isChange = false
           const randomValue = _.random(true)
           if (randomValue < (changeLanguagesCount / languagesCount)) {
             languageName = another[languageName]
@@ -153,7 +153,7 @@ export default {
             isEnd: imgGroup.length === (index + 1),
             isChange: isChange
           }
-          console.log(item, index, changeLanguagesCount, languagesCount, randomValue)
+          console.log(item, index)
           return item
         })
       })
@@ -162,11 +162,11 @@ export default {
     groupImages: function (imgs) {
       const SECTION_COUNT = 8
       const RANGE = 4
-      const changeCount = imgs.length
-      const minRange = changeCount - RANGE
-      const maxRange = changeCount + RANGE
+      const imageCountInGroup = imgs.length
+      const minRange = imageCountInGroup - RANGE
+      const maxRange = imageCountInGroup + RANGE
       let left = 0
-      const groups = _.map(Array(SECTION_COUNT), (val, index) => {
+      const groups = _.chain(Array(SECTION_COUNT)).map((val, index) => {
         return (function () {
           let min = minRange
           let max = maxRange
@@ -176,25 +176,34 @@ export default {
             max += left
           }
           if (index + 1 === SECTION_COUNT) {
-            return changeCount + left
+            return imageCountInGroup + left
           } else {
             const size = _.random(min, max)
-            left += (changeCount - size)
+            left += (imageCountInGroup - size)
             return size
           }
         })()
-      })
+      }).sortBy(size => size).value()
+      console.log(groups)
       console.log(_.sum(groups))
-      return _.map(groups, count => {
-        let result
-        if (count > changeCount) {
-          result = _.sampleSize(_.concat(imgs, _.flatten([_.sampleSize(imgs, count % changeCount)])), count)
-        } else {
-          result = _.sampleSize(imgs, count)
-        }
-        console.log(count, result)
-        return result
+      const pool = _.flatten(_.fill(Array(SECTION_COUNT), imgs))
+      let currentIndex = 0
+      const results = _.map(groups, count => {
+        const result = _.slice(pool, currentIndex, currentIndex + count)
+        currentIndex += count
+        let gap = []
+        const randomResult = _.sampleSize(result, count)
+        console.log(randomResult)
+        const sortedResult = _.sortBy(randomResult, item => {
+          const includes = _.includes(_.slice(gap, 0, 3), item)
+          gap.unshift(item)
+          return includes
+        })
+        console.log(sortedResult)
+        return sortedResult
       })
+      console.log(results)
+      return results
     }
   },
   computed: {
