@@ -4,7 +4,7 @@
     <Dashboard :design="designs"></Dashboard>
     <ul class="transparent">
       <li v-for="name in designs['picture-naming']">
-        <img :src="'./static/picture-naming/' + name">
+        <img :src="'./static/picture-naming/' + name + '.gif'">
       </li>
       <li v-for="(kinds, lang) in designs['lexical-decision']">
         <template v-for="(items, kind) in kinds">
