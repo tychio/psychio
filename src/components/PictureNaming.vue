@@ -89,7 +89,7 @@ export default {
     this.loadRecorder()
     const steps = [1000, 500, 500, 4000]
     if (this.item.isEnd) {
-      steps.push(500)
+      steps.push(1000)
     }
     this.recognition.onspeechstart = () => {
       console.log(this.status)
