@@ -66,7 +66,8 @@ export default {
       language: 'chinese',
       current: -1,
       list: [],
-      results: []
+      results: [],
+      SECTION_COUNT: 8
     }
     return data
   },
@@ -153,21 +154,37 @@ export default {
             isEnd: imgGroup.length === (index + 1),
             isChange: isChange
           }
-          console.log(item, index)
           return item
         })
       })
-      return _.flatten(itemGroups)
+      const randomItemGroups = _.sampleSize(itemGroups, this.SECTION_COUNT)
+
+      _.each(randomItemGroups, itemGroup => {
+        console.group('=========================================')
+        _.each(itemGroup, item => {
+          console.group('---------------------')
+          console.log('picture name:', item.name)
+          console.log('language:', item.language)
+          if (item.isChange) {
+            console.log('Changed')
+          } else {
+            console.log('Not changed')
+          }
+          console.groupEnd('---------------------')
+        })
+        console.groupEnd('<=========================================>')
+      })
+
+      return _.flatten(randomItemGroups)
     },
     groupImages: function (imgs) {
-      const SECTION_COUNT = 8
       const RANGE = 4
       const imageCountInGroup = imgs.length
       const minRange = imageCountInGroup - RANGE
       const maxRange = imageCountInGroup + RANGE
       let left = 0
-      const groups = _.chain(Array(SECTION_COUNT)).map((val, index) => {
-        return (function () {
+      const groups = _.chain(Array(this.SECTION_COUNT)).map((val, index) => {
+        return (function (self) {
           let min = minRange
           let max = maxRange
           if (left > 0) {
@@ -175,34 +192,31 @@ export default {
           } else {
             max += left
           }
-          if (index + 1 === SECTION_COUNT) {
+          if (index + 1 === self.SECTION_COUNT) {
             return imageCountInGroup + left
           } else {
             const size = _.random(min, max)
             left += (imageCountInGroup - size)
             return size
           }
-        })()
+        })(this)
       }).sortBy(size => size).value()
-      console.log(groups)
-      console.log(_.sum(groups))
-      const pool = _.flatten(_.fill(Array(SECTION_COUNT), imgs))
+      const pool = _.flatten(_.fill(Array(this.SECTION_COUNT), imgs))
       let currentIndex = 0
+      console.log('Sum:', _.sum(groups))
+      console.log('Group count:', groups.join(','))
       const results = _.map(groups, count => {
         const result = _.slice(pool, currentIndex, currentIndex + count)
         currentIndex += count
         let gap = []
         const randomResult = _.sampleSize(result, count)
-        console.log(randomResult)
         const sortedResult = _.sortBy(randomResult, item => {
           const includes = _.includes(_.slice(gap, 0, 3), item)
           gap.unshift(item)
           return includes
         })
-        console.log(sortedResult)
         return sortedResult
       })
-      console.log(results)
       return results
     }
   },
