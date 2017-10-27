@@ -160,7 +160,7 @@ export default {
       another[languages[1]] = languages[0]
       let imagesCount = _.size(_.flatten(imgGroups))
       const pairCount = imagesCount - imgGroups.length
-      let changeLanguagesCount = _.round((pairCount) * 0.7)
+      let changeLanguagesCount = _.round((pairCount) * 0.3)
       const keepLanguagesCount = _.round((pairCount - changeLanguagesCount) * 0.5)
       const keepLanguagesCounter = {}
       _.each(languages, langName => {
