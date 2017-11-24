@@ -174,7 +174,8 @@ export default {
           }
           if (isChange !== null) {
             const randomValue = _.random(true)
-            const shouldChange = randomValue < (changeLanguagesCount / imagesCount)
+            const totalCount = imagesCount - imgGroups.length + groupIndex + 1
+            const shouldChange = randomValue < (changeLanguagesCount / totalCount)
             const canNotKeep = keepLanguagesCounter[languageName] === 0
             const mustKeep = changeLanguagesCount === 1 && keepLanguagesCounter[languageName] > 0
             if (!mustKeep && (shouldChange || canNotKeep)) {
