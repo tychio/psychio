@@ -67,7 +67,7 @@ export default {
       current: -1,
       list: [],
       results: [],
-      SECTION_COUNT: 4
+      SECTION_COUNT: 6
     }
     return data
   },
@@ -205,10 +205,9 @@ export default {
       return _.sampleSize(itemGroups, this.SECTION_COUNT)
     },
     groupImages: function (imgs) {
-      const RANGE = 4
       const imageCountInGroup = imgs.length
-      const minRange = imageCountInGroup - RANGE
-      const maxRange = imageCountInGroup + RANGE
+      const minRange = imageCountInGroup - this.SECTION_COUNT
+      const maxRange = imageCountInGroup + this.SECTION_COUNT
       let left = 0
       const groups = _.chain(Array(this.SECTION_COUNT)).map((val, index) => {
         return (function (self) {
@@ -235,15 +234,31 @@ export default {
       const results = _.map(groups, count => {
         const result = _.slice(pool, currentIndex, currentIndex + count)
         currentIndex += count
-        let gap = []
         const randomResult = _.sampleSize(result, count)
-        const sortedResult = _.sortBy(randomResult, item => {
-          const includes = _.includes(_.slice(gap, 0, 3), item)
-          gap.unshift(item)
-          return includes
-        })
-        return sortedResult
+        return this.sortedWithSpace(randomResult, 3)
       })
+      return results
+    },
+    sortedWithSpace: function (arr, gap) {
+      const results = []
+      let cache = []
+      const pick = item => {
+        let cached = false
+        if (!_.includes(_.slice(results, 0 - gap), item)) {
+          results.push(item)
+        } else if (!_.includes(_.slice(results, 0, gap), item)) {
+          results.unshift(item)
+        } else {
+          cache.push(item)
+          cached = true
+        }
+        return cached
+      }
+      _.each(arr, item => {
+        pick(item)
+        cache = _.filter(cache, pick)
+      })
+      console.log('sorted images:', results)
       return results
     }
   },
