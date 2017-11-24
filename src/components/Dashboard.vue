@@ -291,7 +291,7 @@ export default {
 }
 
 .container.processing {
-  background: #ccc;
+  background: white;
 }
 
 .form {
