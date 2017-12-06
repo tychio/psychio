@@ -19,6 +19,7 @@
       </md-input-container>
     </form>
     <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
+    <md-button v-if="results && results.length" class="md-raised md-warn" @click.native="download">Download</md-button>
   </section>
   <section :class="['container', {
     'processing': current >= 0
@@ -53,7 +54,9 @@
 
 <script>
 import * as _ from 'lodash'
+import Jszip from 'jszip'
 import * as screenfull from 'screenfull'
+import { saveAs } from 'file-saver'
 import PictureNaming from './PictureNaming'
 import LexicalDecision from './LexicalDecision'
 
@@ -261,6 +264,19 @@ export default {
       })
       console.log('sorted images:', results)
       return results
+    },
+    download: function () {
+      const zip = new Jszip()
+      _.each(this.results, (result, index) => {
+        const fileName = (_.fill(Array(3), '0').join('') + (index + 1)).slice(-3)
+        const folder = zip.folder('result' + fileName)
+        folder.file(fileName + '.wav', result.record)
+        folder.file(fileName + '.json', JSON.stringify(result))
+      })
+      zip.generateAsync({type: 'blob'})
+      .then(function (content) {
+        saveAs(content, 'psychio_results.zip')
+      })
     }
   },
   computed: {
