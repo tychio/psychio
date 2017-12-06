@@ -47,7 +47,13 @@ export default {
             "001", "002", "003", "004", "005"
           ]
         }
-      }
+      },
+      "iq-tester": [
+        { "Q": "A2", "A": 5 },
+        { "Q": "A3", "A": 1 },
+        { "Q": "A4", "A": 2 },
+        { "Q": "A5", "A": 6 }
+      ]
     }`
     const designs = JSON.parse(json)
     return {
