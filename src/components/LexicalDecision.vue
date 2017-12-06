@@ -22,6 +22,7 @@ export default {
         isNon: this.item.isNon,
         response: 0,
         right: false,
+        language: this.language,
         src: ''
       }
     }
