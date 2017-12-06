@@ -29,7 +29,7 @@
       </md-input-container>
     </form>
     <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
-    <md-button v-if="results && results.length" class="md-raised md-warn" @click.native="download">Download</md-button>
+    <md-button v-if="hasData" class="md-raised md-warn" @click.native="download">Download</md-button>
   </section>
   <section :class="['container', {
     'processing': current >= 0
@@ -40,8 +40,8 @@
     </div>
   </section>
   <section class="container">
-    <md-list>
-      <md-list-item v-for="(result, index) in results" 
+    <md-list v-if="type === TYPE_PIC">
+      <md-list-item v-for="(result, index) in results[TYPE_PIC]" 
         :href="blobUrl(result.record)"
         :target="'_blank'"
         key="index"
@@ -50,12 +50,19 @@
           <img :src="result.src">
         </md-avatar>
         <span>{{result.name}} - ({{result.response}}ms)</span>
-        <span v-if="result.language">[{{result.language}}]</span>
-        <template v-if="type === 'lexical-decision'">
-          <small>Choice/选择(Fact/实际)：{{result.right ? 'True/真' : 'False/假'}}({{!result.isNon ? 'True/真' : 'False/假'}})</small>
-          <md-icon v-if="result.right !== result.isNon" md-theme="green" class="md-primary">done</md-icon>
-          <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
-        </template>
+        <span>[{{result.language}}]</span>
+      </md-list-item>
+    </md-list>
+    <md-list v-if="type === TYPE_LEX" v-for="(typeLex, typeIdx) in [TYPE_LEX_CN, TYPE_LEX_UG]" key="typeIdx">
+      <md-list-item v-if="sumType === typeLex" v-for="(result, index) in results[typeLex]" key="index">
+        <md-avatar>
+          <img :src="result.src">
+        </md-avatar>
+        <span>{{result.name}} - ({{result.response}}ms)</span>
+        <span>[{{result.language}}]</span>
+        <small>Choice/选择(Fact/实际)：{{result.right ? 'True/真' : 'False/假'}}({{!result.isNon ? 'True/真' : 'False/假'}})</small>
+        <md-icon v-if="result.right !== result.isNon" md-theme="green" class="md-primary">done</md-icon>
+        <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
       </md-list-item>
     </md-list>
   </section>
@@ -76,15 +83,23 @@ export default {
   data () {
     let data = {
       type: 'picture-naming',
+      TYPE_PIC: 'picture-naming',
+      TYPE_LEX: 'lexical-decision',
+      TYPE_LEX_CN: 'lexical-decision-chinese',
+      TYPE_LEX_UG: 'lexical-decision-uyghur',
       language: 'chinese',
       current: -1,
       list: [],
-      results: [],
+      results: {},
       SECTION_COUNT: 6,
       showError: false,
       yourname: '',
       contact: ''
     }
+
+    data.results[data.TYPE_PIC] = []
+    data.results[data.TYPE_LEX_CN] = []
+    data.results[data.TYPE_LEX_UG] = []
     return data
   },
   methods: {
@@ -97,7 +112,6 @@ export default {
         return
       }
       this.current = -1
-      this.results = []
       if (screenfull.enabled) {
         screenfull.request(this.$refs.container)
         screenfull.onchange(event => {
@@ -113,7 +127,7 @@ export default {
     },
     next: function (result) {
       if (result) {
-        this.results.push(result)
+        this.results[this.sumType].push(result)
 
         if (this.current === this.list.length - 1) {
           this.current = -1
@@ -284,8 +298,11 @@ export default {
     },
     download: function () {
       const zip = new Jszip()
-      _.each(this.results, (result, index) => {
-        const fileName = this.contact + '_' + (_.fill(Array(3), '0').join('') + (index + 1)).slice(-3)
+      _.each(this.results[this.TYPE_PIC], (result, index) => {
+        const fileName = [
+          this.sumType,
+          (_.fill(Array(3), '0').join('') + (index + 1)).slice(-3)
+        ].join('_')
         const folder = zip.folder(fileName)
         folder.file(fileName + '.wav', result.record)
         folder.file(fileName + '.json', JSON.stringify(result))
@@ -295,7 +312,7 @@ export default {
         contact: this.contact
       }))
       zip.generateAsync({type: 'blob'})
-      .then(function (content) {
+      .then(content => {
         saveAs(content, 'psychio_results_' + this.contact + '.zip')
       })
     }
@@ -303,14 +320,19 @@ export default {
   computed: {
     items: function () {
       return this.design[this.type]
-    }
-  },
-  watch: {
-    type: function () {
-      this.results = []
     },
-    language: function () {
-      this.results = []
+    sumType: function () {
+      let type = this.type
+      if (type === this.TYPE_LEX) {
+        type += '-' + this.language
+      }
+      return type
+    },
+    hasData: function () {
+      const hasPictures = this.results[this.TYPE_PIC].length
+      const hasLexicalChinese = this.results[this.TYPE_LEX_CN].length
+      const hasLexicalUyghur = this.results[this.TYPE_LEX_UG].length
+      return hasPictures || hasLexicalChinese || hasLexicalUyghur
     }
   },
   components: {
