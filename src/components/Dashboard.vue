@@ -1,7 +1,6 @@
 <template>
 <main class="phone-viewport">
   <section class="container">
-    <h1 class="md-display-2">PsychIO</h1>
     <form class="form">
       <div class="col-half">
         <md-input-container>

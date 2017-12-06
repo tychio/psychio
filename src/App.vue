@@ -1,6 +1,9 @@
 <template>
   <div id="app">
-    <img src="./assets/logo.png">
+    <h1 class="logo">
+      <img src="./assets/logo.png">
+      <span>sychio</span>
+    </h1>
     <Dashboard :design="designs"></Dashboard>
     <ul class="transparent">
       <li v-for="name in designs['picture-naming']">
@@ -71,5 +74,18 @@ export default {
   top: -99999px;
   left: -99999px;
   opacity: 0;
+}
+
+h1.logo img {
+  width: 40px;
+  height: 40px;
+}
+
+h1.logo span {
+  position: relative;
+  top: 11px;
+  left: -11px;
+  font-size: 37px;
+  line-height: 30px;
 }
 </style>
