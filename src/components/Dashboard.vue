@@ -317,19 +317,25 @@ export default {
     },
     download: function () {
       const zip = new Jszip()
-      _.each(this.results[this.TYPE_PIC], (result, index) => {
-        const fileName = [
-          this.sumType,
-          (_.fill(Array(3), '0').join('') + (index + 1)).slice(-3)
-        ].join('_')
-        const folder = zip.folder(fileName)
-        folder.file(fileName + '.wav', result.record)
-        folder.file(fileName + '.json', JSON.stringify(result))
+      _.each(this.results, (result, type) => {
+        _.each(result, (item, index) => {
+          const fileName = [
+            type,
+            (_.fill(Array(3), '0').join('') + (index + 1)).slice(-3)
+          ].join('_')
+          const folder = zip.folder(fileName)
+          if (item.record) {
+            folder.file(fileName + '.wav', item.record)
+          }
+          folder.file(fileName + '.json', JSON.stringify(item))
+        })
       })
-      zip.file(this.contact + '.json', JSON.stringify({
+
+      zip.file('info.json', JSON.stringify({
         name: this.yourname,
         contact: this.contact
       }))
+
       zip.generateAsync({type: 'blob'})
       .then(content => {
         saveAs(content, 'psychio_results_' + this.contact + '.zip')

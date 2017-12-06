@@ -19,7 +19,8 @@ export default {
         name: this.item.Q,
         answer: this.item.A,
         response: 0,
-        choice: 0
+        choice: 0,
+        src: ''
       }
     }
   },
