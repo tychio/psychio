@@ -3,6 +3,16 @@
   <section class="container">
     <h1 class="md-display-2">PsychIO</h1>
     <form class="form">
+      <div class="col-half">
+        <md-input-container>
+          <label>Your Name/你的名字</label>
+          <md-input v-model="yourname"></md-input>
+        </md-input-container>
+        <md-input-container>
+          <label>Contact/联系方式</label>
+          <md-input required v-model="contact"></md-input>
+        </md-input-container>
+      </div>
       <md-input-container>
         <label>Test Type/测试类型</label>
         <md-select name="type" v-model="type">
@@ -70,7 +80,10 @@ export default {
       current: -1,
       list: [],
       results: [],
-      SECTION_COUNT: 6
+      SECTION_COUNT: 6,
+      showError: false,
+      yourname: '',
+      contact: ''
     }
     return data
   },
@@ -79,6 +92,10 @@ export default {
       return url && URL.createObjectURL(url)
     },
     play: function () {
+      if (!this.contact) {
+        this.showError = true
+        return
+      }
       this.current = -1
       this.results = []
       if (screenfull.enabled) {
@@ -313,5 +330,17 @@ export default {
 .form {
   width: 480px;
   margin: 0 auto;
+}
+
+.col-half {
+  overflow: hidden;
+  width: 102%;
+  margin: 0 -1%;
+}
+
+.col-half>div {
+  float: left;
+  width: 48%;
+  margin: 1%;
 }
 </style>
