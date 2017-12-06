@@ -285,14 +285,18 @@ export default {
     download: function () {
       const zip = new Jszip()
       _.each(this.results, (result, index) => {
-        const fileName = (_.fill(Array(3), '0').join('') + (index + 1)).slice(-3)
-        const folder = zip.folder('result' + fileName)
+        const fileName = this.contact + '_' + (_.fill(Array(3), '0').join('') + (index + 1)).slice(-3)
+        const folder = zip.folder(fileName)
         folder.file(fileName + '.wav', result.record)
         folder.file(fileName + '.json', JSON.stringify(result))
       })
+      zip.file(this.contact + '.json', JSON.stringify({
+        name: this.yourname,
+        contact: this.contact
+      }))
       zip.generateAsync({type: 'blob'})
       .then(function (content) {
-        saveAs(content, 'psychio_results.zip')
+        saveAs(content, 'psychio_results_' + this.contact + '.zip')
       })
     }
   },
