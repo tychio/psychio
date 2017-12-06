@@ -15,8 +15,9 @@
       <md-input-container>
         <label>Test Type/测试类型</label>
         <md-select name="type" v-model="type">
-          <md-option value="picture-naming">Picture Naming/图片命名</md-option>
-          <md-option value="lexical-decision">Lexical Decision/词汇判断</md-option>
+          <md-option :value="TYPE_PIC">Picture Naming/图片命名</md-option>
+          <md-option :value="TYPE_LEX">Lexical Decision/词汇判断</md-option>
+          <md-option :value="TYPE_IQ">IQ Test/IQ测试</md-option>
         </md-select>
       </md-input-container>
       <md-input-container v-if="type === 'lexical-decision'">
@@ -65,6 +66,17 @@
         <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
       </md-list-item>
     </md-list>
+    <md-list v-if="type === TYPE_IQ">
+      <md-list-item v-for="(result, index) in results[sumType]" key="index">
+        <md-avatar>
+          <img :src="result.src">
+        </md-avatar>
+        <span>{{result.name}} - ({{result.response}}ms)</span>
+        <span>Answer/答案 - Choice/作答：<small>{{result.answer}}</small> - {{result.choice}}</span>
+        <md-icon v-if="result.answer === result.choice" md-theme="green" class="md-primary">done</md-icon>
+        <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
+      </md-list-item>
+    </md-list>
   </section>
 </main>
 </template>
@@ -76,14 +88,16 @@ import * as screenfull from 'screenfull'
 import { saveAs } from 'file-saver'
 import PictureNaming from './PictureNaming'
 import LexicalDecision from './LexicalDecision'
+import IQTester from './IQTester'
 
 export default {
   name: 'Dashboard',
   props: ['design'],
   data () {
     let data = {
-      type: 'picture-naming',
+      type: '',
       TYPE_PIC: 'picture-naming',
+      TYPE_IQ: 'iq-tester',
       TYPE_LEX: 'lexical-decision',
       TYPE_LEX_CN: 'lexical-decision-chinese',
       TYPE_LEX_UG: 'lexical-decision-uyghur',
@@ -96,10 +110,11 @@ export default {
       yourname: '',
       contact: ''
     }
-
+    data.type = data.TYPE_PIC
     data.results[data.TYPE_PIC] = []
     data.results[data.TYPE_LEX_CN] = []
     data.results[data.TYPE_LEX_UG] = []
+    data.results[data.TYPE_IQ] = []
     return data
   },
   methods: {
@@ -140,11 +155,15 @@ export default {
       }
     },
     random: function () {
-      const methodName = {
-        'picture-naming': 'randomPictures',
-        'lexical-decision': 'randomLexical'
-      }[this.type]
+      const mapper = {}
+      mapper[this.TYPE_PIC] = 'randomPictures'
+      mapper[this.TYPE_LEX] = 'randomLexical'
+      mapper[this.TYPE_IQ] = 'randomIQ'
+      const methodName = mapper[this.type]
       return this[methodName]()
+    },
+    randomIQ: function () {
+      return this.items
     },
     randomLexical: function () {
       const languageGroup = this.items[this.language]
@@ -337,7 +356,8 @@ export default {
   },
   components: {
     'picture-naming': PictureNaming,
-    'lexical-decision': LexicalDecision
+    'lexical-decision': LexicalDecision,
+    'iq-tester': IQTester
   }
 }
 </script>
