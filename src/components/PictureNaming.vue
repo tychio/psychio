@@ -43,7 +43,7 @@ export default {
         this.$emit('end', this.result)
       } else if (this.status === 'playing') {
         this.startDate = new Date()
-        this.media.start(4000)
+        this.media.start(5000)
       } else if (this.status === 'ready') {
         this.recognition.start()
       }
@@ -70,6 +70,15 @@ export default {
         this.result.src = this.imageSrc
         this.startDate = 0
         callback && callback()
+      }
+    },
+    setStatus: function (status, timeout) {
+      if (timeout) {
+        setTimeout(() => {
+          this.status = status
+        }, timeout)
+      } else {
+        this.status = status
       }
     }
   },
@@ -104,24 +113,14 @@ export default {
         this.recognition.start()
       }
     }
-    this.status = 'start'
-    setTimeout(() => {
-      this.status = 'ready'
-    }, steps[0])
-    setTimeout(() => {
-      this.status = 'prompt'
-    }, _.sum(_.slice(steps, 0, 2)))
-    setTimeout(() => {
-      this.status = 'playing'
-    }, _.sum(_.slice(steps, 0, 3)))
+    this.setStatus('start')
+    this.setStatus('ready', steps[0])
+    this.setStatus('prompt', _.sum(_.slice(steps, 0, 2)))
+    this.setStatus('playing', _.sum(_.slice(steps, 0, 3)))
     if (this.item.isEnd) {
-      setTimeout(() => {
-        this.status = 'group'
-      }, _.sum(_.slice(steps, 0, 4)))
+      this.setStatus('group', _.sum(_.slice(steps, 0, 4)))
     }
-    setTimeout(() => {
-      this.status = 'end'
-    }, _.sum(steps))
+    this.setStatus('end', _.sum(steps))
   }
 }
 </script>
