@@ -3,26 +3,23 @@
     <div class="stage-pic" :style="{
       'background-image': 'url(' + imageSrc + ')'
     }"></div>
-    <i class="icon icon-cross"></i>
-    <i class="icon icon-dot"></i>
     <input type="text" v-focus v-if="status === 'playing'" @keyup="end">
   </div>
 </template>
 
 <script>
 export default {
-  name: 'LexicalDecision',
+  name: 'IQTester',
   props: ['item', 'language'],
   data: function () {
     return {
       startDate: 0,
       status: null,
       result: {
-        name: this.item.name,
-        isNon: this.item.isNon,
+        name: this.item.Q,
+        answer: this.item.A,
         response: 0,
-        right: false,
-        language: this.language,
+        choice: 0,
         src: ''
       }
     }
@@ -42,10 +39,12 @@ export default {
       if (!event) {
         this.record()
       } else if (this.status === 'playing') {
-        clearTimeout(this.endTimeout)
-        this.status = 'end'
         this.record()
-        this.result.right = (event.keyCode === 13)
+        if (event.keyCode > 48 && event.keyCode < 57) {
+          this.status = 'end'
+          clearTimeout(this.endTimeout)
+          this.result.choice = event.keyCode - 48
+        }
       }
     },
     record: function () {
@@ -58,21 +57,14 @@ export default {
   },
   computed: {
     imageSrc: function () {
-      return './static/lexical-decision/' + this.language + '-' + (this.item.isNon ? 'nonwords' : 'words') + '/' + this.item.name + '.png'
+      return './static/iq-tester/' + this.item.Q + '.jpg'
     }
   },
   mounted: function () {
-    const steps = [1000, 500, 4000]
-    this.status = 'start'
-    setTimeout(() => {
-      this.status = 'ready'
-    }, steps[0])
-    setTimeout(() => {
-      this.status = 'playing'
-    }, steps[0] + steps[1])
+    this.status = 'playing'
     this.endTimeout = setTimeout(() => {
       this.status = 'end'
-    }, steps[0] + steps[1] + steps[2])
+    }, 60000)
   },
   directives: {
     focus: {
@@ -102,34 +94,6 @@ export default {
   background-repeat: no-repeat;
   background-position: center center;
   background-size: contain;
-}
-
-.stage i.icon {
-  display: none;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  margin: -100px;
-  width: 200px;
-  height: 200px;
-  line-height: 200px;
-  font-style: normal;
-  font-size: 100px;
-}
-
-i.icon.icon-cross:before {
-  content: '+';
-}
-
-i.icon.icon-dot:before {
-  content: '\00b7';
-  font-size: 200px;
-}
-
-.stage-prompt i.icon.icon-lang,
-.stage-saying i.icon.icon-dot,
-.stage-start i.icon.icon-cross {
-  display: block;
 }
 
 .stage-playing .stage-pic {

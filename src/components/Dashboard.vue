@@ -1,13 +1,23 @@
 <template>
 <main class="phone-viewport">
   <section class="container">
-    <h1 class="md-display-2">PsychIO</h1>
     <form class="form">
+      <div class="col-half">
+        <md-input-container>
+          <label>Your Name/你的名字</label>
+          <md-input v-model="yourname"></md-input>
+        </md-input-container>
+        <md-input-container>
+          <label>Contact/联系方式</label>
+          <md-input required v-model="contact"></md-input>
+        </md-input-container>
+      </div>
       <md-input-container>
         <label>Test Type/测试类型</label>
         <md-select name="type" v-model="type">
-          <md-option value="picture-naming">Picture Naming/图片命名</md-option>
-          <md-option value="lexical-decision">Lexical Decision/词汇判断</md-option>
+          <md-option :value="TYPE_PIC">Picture Naming/图片命名</md-option>
+          <md-option :value="TYPE_LEX">Lexical Decision/词汇判断</md-option>
+          <md-option :value="TYPE_IQ">IQ Test/IQ测试</md-option>
         </md-select>
       </md-input-container>
       <md-input-container v-if="type === 'lexical-decision'">
@@ -18,7 +28,9 @@
         </md-select>
       </md-input-container>
     </form>
+    <div class="error" v-if="showError && !contact">Please enter contact/请填写联系方式</div>
     <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
+    <md-button v-if="hasData" class="md-raised md-warn" @click.native="download">Download</md-button>
   </section>
   <section :class="['container', {
     'processing': current >= 0
@@ -29,8 +41,8 @@
     </div>
   </section>
   <section class="container">
-    <md-list>
-      <md-list-item v-for="(result, index) in results" 
+    <md-list v-if="type === TYPE_PIC">
+      <md-list-item v-for="(result, index) in results[TYPE_PIC]" 
         :href="blobUrl(result.record)"
         :target="'_blank'"
         key="index"
@@ -39,12 +51,30 @@
           <img :src="result.src">
         </md-avatar>
         <span>{{result.name}} - ({{result.response}}ms)</span>
-        <span v-if="result.language">[{{result.language}}]</span>
-        <template v-if="type === 'lexical-decision'">
-          <small>Choice/选择(Fact/实际)：{{result.right ? 'True/真' : 'False/假'}}({{!result.isNon ? 'True/真' : 'False/假'}})</small>
-          <md-icon v-if="result.right !== result.isNon" md-theme="green" class="md-primary">done</md-icon>
-          <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
-        </template>
+        <span>[{{result.language}}]</span>
+      </md-list-item>
+    </md-list>
+    <md-list v-if="type === TYPE_LEX" v-for="(typeLex, typeIdx) in [TYPE_LEX_CN, TYPE_LEX_UG]" key="typeIdx">
+      <md-list-item v-if="sumType === typeLex" v-for="(result, index) in results[typeLex]" key="index">
+        <md-avatar>
+          <img :src="result.src">
+        </md-avatar>
+        <span>{{result.name}} - ({{result.response}}ms)</span>
+        <span>[{{result.language}}]</span>
+        <small>Choice/选择(Fact/实际)：{{result.right ? 'True/真' : 'False/假'}}({{!result.isNon ? 'True/真' : 'False/假'}})</small>
+        <md-icon v-if="result.right !== result.isNon" md-theme="green" class="md-primary">done</md-icon>
+        <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
+      </md-list-item>
+    </md-list>
+    <md-list v-if="type === TYPE_IQ">
+      <md-list-item v-for="(result, index) in results[sumType]" key="index">
+        <md-avatar>
+          <img :src="result.src">
+        </md-avatar>
+        <span>{{result.name}} - ({{result.response}}ms)</span>
+        <span>Answer/答案 - Choice/作答：<small>{{result.answer}}</small> - {{result.choice}}</span>
+        <md-icon v-if="result.answer === result.choice" md-theme="green" class="md-primary">done</md-icon>
+        <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
       </md-list-item>
     </md-list>
   </section>
@@ -53,22 +83,38 @@
 
 <script>
 import * as _ from 'lodash'
+import Jszip from 'jszip'
 import * as screenfull from 'screenfull'
+import { saveAs } from 'file-saver'
 import PictureNaming from './PictureNaming'
 import LexicalDecision from './LexicalDecision'
+import IQTester from './IQTester'
 
 export default {
   name: 'Dashboard',
   props: ['design'],
   data () {
     let data = {
-      type: 'picture-naming',
+      type: '',
+      TYPE_PIC: 'picture-naming',
+      TYPE_IQ: 'iq-tester',
+      TYPE_LEX: 'lexical-decision',
+      TYPE_LEX_CN: 'lexical-decision-chinese',
+      TYPE_LEX_UG: 'lexical-decision-uyghur',
       language: 'chinese',
       current: -1,
       list: [],
-      results: [],
-      SECTION_COUNT: 4
+      results: {},
+      SECTION_COUNT: 6,
+      showError: false,
+      yourname: '',
+      contact: ''
     }
+    data.type = data.TYPE_PIC
+    data.results[data.TYPE_PIC] = []
+    data.results[data.TYPE_LEX_CN] = []
+    data.results[data.TYPE_LEX_UG] = []
+    data.results[data.TYPE_IQ] = []
     return data
   },
   methods: {
@@ -76,8 +122,11 @@ export default {
       return url && URL.createObjectURL(url)
     },
     play: function () {
+      if (!this.contact) {
+        this.showError = true
+        return
+      }
       this.current = -1
-      this.results = []
       if (screenfull.enabled) {
         screenfull.request(this.$refs.container)
         screenfull.onchange(event => {
@@ -93,7 +142,7 @@ export default {
     },
     next: function (result) {
       if (result) {
-        this.results.push(result)
+        this.results[this.sumType].push(result)
 
         if (this.current === this.list.length - 1) {
           this.current = -1
@@ -106,11 +155,15 @@ export default {
       }
     },
     random: function () {
-      const methodName = {
-        'picture-naming': 'randomPictures',
-        'lexical-decision': 'randomLexical'
-      }[this.type]
+      const mapper = {}
+      mapper[this.TYPE_PIC] = 'randomPictures'
+      mapper[this.TYPE_LEX] = 'randomLexical'
+      mapper[this.TYPE_IQ] = 'randomIQ'
+      const methodName = mapper[this.type]
       return this[methodName]()
+    },
+    randomIQ: function () {
+      return this.items
     },
     randomLexical: function () {
       const languageGroup = this.items[this.language]
@@ -160,7 +213,7 @@ export default {
       another[languages[1]] = languages[0]
       let imagesCount = _.size(_.flatten(imgGroups))
       const pairCount = imagesCount - imgGroups.length
-      let changeLanguagesCount = _.round((pairCount) * 0.3)
+      let changeLanguagesCount = _.round((pairCount) * (1 / 3))
       const keepLanguagesCount = _.round((pairCount - changeLanguagesCount) * 0.5)
       const keepLanguagesCounter = {}
       _.each(languages, langName => {
@@ -174,7 +227,8 @@ export default {
           }
           if (isChange !== null) {
             const randomValue = _.random(true)
-            const shouldChange = randomValue < (changeLanguagesCount / imagesCount)
+            const totalCount = imagesCount - imgGroups.length + groupIndex + 1
+            const shouldChange = randomValue < (changeLanguagesCount / totalCount)
             const canNotKeep = keepLanguagesCounter[languageName] === 0
             const mustKeep = changeLanguagesCount === 1 && keepLanguagesCounter[languageName] > 0
             if (!mustKeep && (shouldChange || canNotKeep)) {
@@ -205,10 +259,9 @@ export default {
       return _.sampleSize(itemGroups, this.SECTION_COUNT)
     },
     groupImages: function (imgs) {
-      const RANGE = 4
       const imageCountInGroup = imgs.length
-      const minRange = imageCountInGroup - RANGE
-      const maxRange = imageCountInGroup + RANGE
+      const minRange = imageCountInGroup - this.SECTION_COUNT
+      const maxRange = imageCountInGroup + this.SECTION_COUNT
       let left = 0
       const groups = _.chain(Array(this.SECTION_COUNT)).map((val, index) => {
         return (function (self) {
@@ -235,34 +288,82 @@ export default {
       const results = _.map(groups, count => {
         const result = _.slice(pool, currentIndex, currentIndex + count)
         currentIndex += count
-        let gap = []
         const randomResult = _.sampleSize(result, count)
-        const sortedResult = _.sortBy(randomResult, item => {
-          const includes = _.includes(_.slice(gap, 0, 3), item)
-          gap.unshift(item)
-          return includes
-        })
-        return sortedResult
+        return this.sortedWithSpace(randomResult, 3)
       })
       return results
+    },
+    sortedWithSpace: function (arr, gap) {
+      const results = []
+      let cache = []
+      const pick = item => {
+        let cached = false
+        if (!_.includes(_.slice(results, 0 - gap), item)) {
+          results.push(item)
+        } else if (!_.includes(_.slice(results, 0, gap), item)) {
+          results.unshift(item)
+        } else {
+          cache.push(item)
+          cached = true
+        }
+        return cached
+      }
+      _.each(arr, item => {
+        pick(item)
+        cache = _.filter(cache, pick)
+      })
+      console.log('sorted images:', results)
+      return results
+    },
+    download: function () {
+      const zip = new Jszip()
+      _.each(this.results, (result, type) => {
+        _.each(result, (item, index) => {
+          const fileName = [
+            type,
+            (_.fill(Array(3), '0').join('') + (index + 1)).slice(-3)
+          ].join('_')
+          const folder = zip.folder(fileName)
+          if (item.record) {
+            folder.file(fileName + '.wav', item.record)
+          }
+          folder.file(fileName + '.json', JSON.stringify(item))
+        })
+      })
+
+      zip.file('info.json', JSON.stringify({
+        name: this.yourname,
+        contact: this.contact
+      }))
+
+      zip.generateAsync({type: 'blob'})
+      .then(content => {
+        saveAs(content, 'psychio_results_' + this.contact + '.zip')
+      })
     }
   },
   computed: {
     items: function () {
       return this.design[this.type]
-    }
-  },
-  watch: {
-    type: function () {
-      this.results = []
     },
-    language: function () {
-      this.results = []
+    sumType: function () {
+      let type = this.type
+      if (type === this.TYPE_LEX) {
+        type += '-' + this.language
+      }
+      return type
+    },
+    hasData: function () {
+      const hasPictures = this.results[this.TYPE_PIC].length
+      const hasLexicalChinese = this.results[this.TYPE_LEX_CN].length
+      const hasLexicalUyghur = this.results[this.TYPE_LEX_UG].length
+      return hasPictures || hasLexicalChinese || hasLexicalUyghur
     }
   },
   components: {
     'picture-naming': PictureNaming,
-    'lexical-decision': LexicalDecision
+    'lexical-decision': LexicalDecision,
+    'iq-tester': IQTester
   }
 }
 </script>
@@ -275,11 +376,27 @@ export default {
 }
 
 .container.processing {
-  background: #ccc;
+  background: white;
 }
 
 .form {
   width: 480px;
   margin: 0 auto;
+}
+
+.col-half {
+  overflow: hidden;
+  width: 102%;
+  margin: 0 -1%;
+}
+
+.col-half>div {
+  float: left;
+  width: 48%;
+  margin: 1%;
+}
+
+.error {
+  color: #cc5500;
 }
 </style>
