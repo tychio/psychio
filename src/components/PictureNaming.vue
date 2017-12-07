@@ -86,7 +86,7 @@ export default {
     languageSay: function () {
       return {
         chinese: '说',
-        uyghur: 'ئېيتماق',
+        uyghur: '-سۆزله',
         english: 'Say'
       }[this.item.language]
     },
@@ -96,7 +96,7 @@ export default {
   },
   mounted: function () {
     this.loadRecorder()
-    const steps = [1000, 500, 500, 4000]
+    const steps = [1000, 500, 700, 4000]
     if (this.item.isEnd) {
       steps.push(1000)
     }
@@ -168,6 +168,10 @@ i.icon.icon-asterisk:before {
 i.icon.icon-dot:before {
   content: '\00b7';
   font-size: 200px;
+}
+
+.stage-prompt i.icon.icon-lang {
+  white-space: nowrap;
 }
 
 .stage-prompt i.icon.icon-lang,
