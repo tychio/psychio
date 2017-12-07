@@ -13,6 +13,9 @@
         </md-input-container>
       </div>
       <md-input-container>
+        <md-switch v-model="realMode">{{realMode ? '实测' : '示例'}}模式</md-switch>
+      </md-input-container>
+      <md-input-container>
         <label>Test Type/测试类型</label>
         <md-select name="type" v-model="type">
           <md-option :value="TYPE_PIC">Picture Naming/图片命名</md-option>
@@ -29,15 +32,23 @@
       </md-input-container>
     </form>
     <div class="error" v-if="showError && !contact">Please enter contact/请填写联系方式</div>
-    <md-button class="md-raised md-accent" @click.native="play">Play</md-button>
+    <md-button class="md-raised md-accent" @click.native="start">Start</md-button>
     <md-button v-if="hasData" class="md-raised md-warn" @click.native="download">Download</md-button>
   </section>
   <section :class="['container', {
     'processing': current >= 0
   }]" ref="container">
-    <div v-for="(item, index) in list" v-if="current >= index" v-show="current <= index">
+    <div v-for="(item, index) in list" v-if="current >= (index + 1)" v-show="current <= (index + 1)">
       <component :is="type" :item="item" :language="language" @end="next"
       ></component>
+    </div>
+    <div class="instruction" v-if="current === 0">
+      <input class="transparent" type="text" v-focus @keyup="play">
+      <div class="instruction-content">
+        <p class="instruction-header">{{instructionContent.header}}</p>
+        <p class="instruction-body" v-html="instructionContent[sumType]"></p>
+        <p class="instruction-footer">{{instructionContent.footer}}</p>
+      </div>
     </div>
   </section>
   <section class="container">
@@ -92,7 +103,7 @@ import IQTester from './IQTester'
 
 export default {
   name: 'Dashboard',
-  props: ['design'],
+  props: ['design', 'demo'],
   data () {
     let data = {
       type: '',
@@ -101,6 +112,8 @@ export default {
       TYPE_LEX: 'lexical-decision',
       TYPE_LEX_CN: 'lexical-decision-chinese',
       TYPE_LEX_UG: 'lexical-decision-uyghur',
+      TYPE_SIMON: 'simon',
+      TYPE_FLANKER: 'flanker',
       language: 'chinese',
       current: -1,
       list: [],
@@ -108,7 +121,11 @@ export default {
       SECTION_COUNT: 6,
       showError: false,
       yourname: '',
-      contact: ''
+      contact: '',
+      realMode: false,
+      KEY: {
+        START: 32
+      }
     }
     data.type = data.TYPE_PIC
     data.results[data.TYPE_PIC] = []
@@ -121,7 +138,7 @@ export default {
     blobUrl: function (url) {
       return url && URL.createObjectURL(url)
     },
-    play: function () {
+    start: function () {
       if (!this.contact) {
         this.showError = true
         return
@@ -140,11 +157,16 @@ export default {
         this.current = 0
       })
     },
+    play: function (event) {
+      if (event.keyCode === this.KEY.START) {
+        this.current = 1
+      }
+    },
     next: function (result) {
       if (result) {
         this.results[this.sumType].push(result)
 
-        if (this.current === this.list.length - 1) {
+        if (this.current === this.list.length) {
           this.current = -1
           screenfull.exit()
         } else {
@@ -344,7 +366,11 @@ export default {
   },
   computed: {
     items: function () {
-      return this.design[this.type]
+      if (this.realMode) {
+        return this.design[this.type]
+      } else {
+        return this.demo[this.type]
+      }
     },
     sumType: function () {
       let type = this.type
@@ -358,6 +384,77 @@ export default {
       const hasLexicalChinese = this.results[this.TYPE_LEX_CN].length
       const hasLexicalUyghur = this.results[this.TYPE_LEX_UG].length
       return hasPictures || hasLexicalChinese || hasLexicalUyghur
+    },
+    instructionContent: function () {
+      let content = {}
+      const params = window.location.search.match(/(l=)([\w-]+)/)
+      if (params && params.length >= 3 && params[2] === 'en-US') {
+        content = {
+          header: 'Welcome to the experiment!',
+          footer: 'Press SPACE bar to start the experiment.'
+        }
+        content[this.TYPE_LEX_UG] = [
+          'Now you will be presented with a series of words.',
+          'If the stimulus is a real Uyghur word, press “Red” key as quick as possible;',
+          'If the stimulus is a non-Uyghur word, press “Blue” key as quick as possible.'
+        ].join('<br/>')
+        content[this.TYPE_LEX_CN] = [
+          'Now you will be presented with a series of characters.',
+          'If the stimulus is a real Chinese character, press ”Red” key as quick as possible;',
+          'If the stimulus is a non-Chinese character, press “Blue” key as quick as possible.'
+        ].join('<br/>')
+        content[this.TYPE_PIC] = [
+          'You will be required to name pictures respectively in Uyghur and Chinese.',
+          'If you see the cue “说”, speak out the name of following picture in Chinese as quickly as possible;',
+          'if you see the cue “-سۆزله”, speak out the name of following picture in Uyghur as quickly as possible.',
+          'Try to name the picture as quickly and accurately as possible.'
+        ].join('<br/>')
+        content[this.TYPE_SIMON] = [
+          'In the experiment, if you see the red circle, press “Red” key as quickly as possible;',
+          'if you see the blue circle, press “Blue” key as quickly as possible, regardless of its location on the screen.',
+          'Press the correct key as quickly as possible.'
+        ].join('<br/>')
+        content[this.TYPE_FLANKER] = [
+          'You will be presented with a series of arrows, choose the direction pointed by the arrow in the CENTRE as quickly as you can, regardless of the direction of other surrounding arrows.',
+          'If the arrow in the centre is pointing to the left, press the “Red” key.',
+          'If the arrow in the centre is pointing to the right, press the “Blue” key;'
+        ].join('<br/>')
+        content[this.TYPE_IQ] = 'Please answer the following 60 questions within 40 minutes.'
+      } else {
+        content = {
+          header: '欢迎参加实验！',
+          footer: '按空格键开始实验。'
+        }
+        content[this.TYPE_LEX_UG] = [
+          '你将会看到一系列单词。',
+          '如果该单词为真维文词，请迅速按红色键；',
+          '如果该单词为假维文词，请迅速按蓝色键。'
+        ].join('<br/>')
+        content[this.TYPE_LEX_CN] = [
+          '你将会看到一系列汉字。',
+          '如果该字为真汉字，请按红色键；',
+          '如果该字为假汉字，请按蓝色键。'
+        ].join('<br/>')
+        content[this.TYPE_PIC] = [
+          '你将分别用维语和汉语对出现的图片进行命名。',
+          '看到提示字为“说”时，请迅速用汉语命名接下来出现的图片；',
+          '看到提示字为“ -سۆزله”时，请迅速用维语命名接下来出现的图片。',
+          '请既快又准确地给图片命名。'
+        ].join('<br/>')
+        content[this.TYPE_SIMON] = [
+          '在实验中，看到红色圆形时，请快速按红色键；',
+          '看到蓝色圆形时，请快速按蓝色键，不用管图形出现在屏幕中的位置。',
+          '请既快又准确地做出相应判断。'
+        ].join('<br/>')
+        content[this.TYPE_FLANKER] = [
+          '你将会看到一系列的箭头，请快速并准确判断中间位置箭头所指的方向，不用管旁边的箭头方向。',
+          '如果中间的箭头指向左边，请快速按红色键。',
+          '如果中间的箭头指向右边，请快速按蓝色键；'
+        ].join('<br/>')
+        content[this.TYPE_IQ] = '请在40分钟内作答下列60道题。'
+      }
+
+      return content
     }
   },
   components: {
@@ -379,6 +476,32 @@ export default {
   background: white;
 }
 
+.instruction {
+  display: none;
+}
+
+.processing .instruction {
+  display: block;
+}
+
+.instruction-content {
+  width: 80%;
+  margin: 35% auto 0;
+  font-size: 20px;
+}
+
+.instruction-header,
+.instruction-body {
+  text-align: left;
+  line-height: 32px;
+}
+
+.instruction-footer {
+  margin-top: 50px;
+  font-size: 30px;
+  color: #888;
+}
+
 .form {
   width: 480px;
   margin: 0 auto;
@@ -398,5 +521,9 @@ export default {
 
 .error {
   color: #cc5500;
+}
+
+.md-switch label {
+  position: static;
 }
 </style>
