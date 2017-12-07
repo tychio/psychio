@@ -91,13 +91,6 @@ export default {
     this.setStatus('ready', this.steps[0])
     this.setStatus('playing', _.sum(_.slice(this.steps, 0, 2)))
     this.endTimeout = this.setStatus('feedback', _.sum(_.slice(this.steps, 0, 3)))
-  },
-  directives: {
-    focus: {
-      inserted: function (el) {
-        setInterval(() => el.focus(), 50)
-      }
-    }
   }
 }
 </script>

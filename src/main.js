@@ -8,6 +8,12 @@ import 'vue-material/dist/vue-material.css'
 Vue.config.productionTip = false
 Vue.use(VueMaterial)
 
+Vue.directive('focus', {
+  inserted: function (el) {
+    setInterval(() => el.focus(), 50)
+  }
+})
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
