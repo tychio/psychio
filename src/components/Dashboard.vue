@@ -523,7 +523,7 @@ export default {
   color: #cc5500;
 }
 
-.md-switch label {
+.md-switch label.md-switch-label {
   position: static;
 }
 </style>
