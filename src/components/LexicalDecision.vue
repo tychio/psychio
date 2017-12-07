@@ -3,6 +3,7 @@
     <div class="stage-pic" :style="{
       'background-image': 'url(' + imageSrc + ')'
     }"></div>
+    <div class="feedback">{{feedback}}</div>
     <i class="icon icon-cross"></i>
     <i class="icon icon-dot"></i>
     <input type="text" v-focus v-if="status === 'playing'" @keyup="end">
@@ -10,6 +11,8 @@
 </template>
 
 <script>
+import * as _ from 'lodash'
+
 export default {
   name: 'LexicalDecision',
   props: ['item', 'language'],
@@ -17,11 +20,12 @@ export default {
     return {
       startDate: 0,
       status: null,
+      steps: [],
       result: {
         name: this.item.name,
         isNon: this.item.isNon,
         response: 0,
-        right: false,
+        right: null,
         language: this.language,
         src: ''
       }
@@ -34,6 +38,8 @@ export default {
         this.$emit('end', this.result)
       } else if (this.status === 'playing') {
         this.startDate = new Date()
+      } else if (this.status === 'feedback') {
+        this.setStatus('end', this.steps[3])
       }
     }
   },
@@ -43,7 +49,7 @@ export default {
         this.record()
       } else if (this.status === 'playing') {
         clearTimeout(this.endTimeout)
-        this.status = 'end'
+        this.setStatus('feedback')
         this.record()
         this.result.right = (event.keyCode === 13)
       }
@@ -54,25 +60,37 @@ export default {
         this.result.src = this.imageSrc
         this.startDate = 0
       }
+    },
+    setStatus: function (status, timeout) {
+      if (timeout) {
+        return setTimeout(() => {
+          this.status = status
+        }, timeout)
+      } else {
+        this.status = status
+      }
     }
   },
   computed: {
     imageSrc: function () {
       return './static/lexical-decision/' + this.language + '-' + (this.item.isNon ? 'nonwords' : 'words') + '/' + this.item.name + '.png'
+    },
+    feedback: function () {
+      let feedback = ''
+      if (this.result.right === null) {
+        feedback = '反应超时'
+      } else {
+        feedback = this.result.right !== this.result.isNon ? '正确' : '错误'
+      }
+      return feedback
     }
   },
   mounted: function () {
-    const steps = [1000, 500, 4000]
-    this.status = 'start'
-    setTimeout(() => {
-      this.status = 'ready'
-    }, steps[0])
-    setTimeout(() => {
-      this.status = 'playing'
-    }, steps[0] + steps[1])
-    this.endTimeout = setTimeout(() => {
-      this.status = 'end'
-    }, steps[0] + steps[1] + steps[2])
+    this.steps = [1000, 500, 4000, 500]
+    this.setStatus('start')
+    this.setStatus('ready', this.steps[0])
+    this.setStatus('playing', _.sum(_.slice(this.steps, 0, 2)))
+    this.endTimeout = this.setStatus('feedback', _.sum(_.slice(this.steps, 0, 3)))
   },
   directives: {
     focus: {
@@ -104,6 +122,12 @@ export default {
   background-size: contain;
 }
 
+.feedback {
+  display: none;
+  font-size: 54px;
+  margin-top: 50%;
+}
+
 .stage i.icon {
   display: none;
   position: absolute;
@@ -133,6 +157,10 @@ i.icon.icon-dot:before {
 }
 
 .stage-playing .stage-pic {
+  display: block;
+}
+
+.stage-feedback .feedback {
   display: block;
 }
 
