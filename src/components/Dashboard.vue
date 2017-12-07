@@ -386,71 +386,75 @@ export default {
       return hasPictures || hasLexicalChinese || hasLexicalUyghur
     },
     instructionContent: function () {
-      const zhCN = {
-        header: '欢迎参加实验！',
-        footer: '按空格键开始实验。'
+      let content = {}
+      const params = window.location.search.match(/(l=)([\w-]+)/)
+      if (params && params.length >= 3 && params[2] === 'en-US') {
+        content = {
+          header: 'Welcome to the experiment!',
+          footer: 'Press SPACE bar to start the experiment.'
+        }
+        content[this.TYPE_LEX_UG] = [
+          'Now you will be presented with a series of words.',
+          'If the stimulus is a real Uyghur word, press “Red” key as quick as possible;',
+          'If the stimulus is a non-Uyghur word, press “Blue” key as quick as possible.'
+        ].join('<br/>')
+        content[this.TYPE_LEX_CN] = [
+          'Now you will be presented with a series of characters.',
+          'If the stimulus is a real Chinese character, press ”Red” key as quick as possible;',
+          'If the stimulus is a non-Chinese character, press “Blue” key as quick as possible.'
+        ].join('<br/>')
+        content[this.TYPE_PIC] = [
+          'You will be required to name pictures respectively in Uyghur and Chinese.',
+          'If you see the cue “说”, speak out the name of following picture in Chinese as quickly as possible;',
+          'if you see the cue “-سۆزله”, speak out the name of following picture in Uyghur as quickly as possible.',
+          'Try to name the picture as quickly and accurately as possible.'
+        ].join('<br/>')
+        content[this.TYPE_SIMON] = [
+          'In the experiment, if you see the red circle, press “Red” key as quickly as possible;',
+          'if you see the blue circle, press “Blue” key as quickly as possible, regardless of its location on the screen.',
+          'Press the correct key as quickly as possible.'
+        ].join('<br/>')
+        content[this.TYPE_FLANKER] = [
+          'You will be presented with a series of arrows, choose the direction pointed by the arrow in the CENTRE as quickly as you can, regardless of the direction of other surrounding arrows.',
+          'If the arrow in the centre is pointing to the left, press the “Red” key.',
+          'If the arrow in the centre is pointing to the right, press the “Blue” key;'
+        ].join('<br/>')
+        content[this.TYPE_IQ] = 'Please answer the following 60 questions within 40 minutes.'
+      } else {
+        content = {
+          header: '欢迎参加实验！',
+          footer: '按空格键开始实验。'
+        }
+        content[this.TYPE_LEX_UG] = [
+          '你将会看到一系列单词。',
+          '如果该单词为真维文词，请迅速按红色键；',
+          '如果该单词为假维文词，请迅速按蓝色键。'
+        ].join('<br/>')
+        content[this.TYPE_LEX_CN] = [
+          '你将会看到一系列汉字。',
+          '如果该字为真汉字，请按红色键；',
+          '如果该字为假汉字，请按蓝色键。'
+        ].join('<br/>')
+        content[this.TYPE_PIC] = [
+          '你将分别用维语和汉语对出现的图片进行命名。',
+          '看到提示字为“说”时，请迅速用汉语命名接下来出现的图片；',
+          '看到提示字为“ -سۆزله”时，请迅速用维语命名接下来出现的图片。',
+          '请既快又准确地给图片命名。'
+        ].join('<br/>')
+        content[this.TYPE_SIMON] = [
+          '在实验中，看到红色圆形时，请快速按红色键；',
+          '看到蓝色圆形时，请快速按蓝色键，不用管图形出现在屏幕中的位置。',
+          '请既快又准确地做出相应判断。'
+        ].join('<br/>')
+        content[this.TYPE_FLANKER] = [
+          '你将会看到一系列的箭头，请快速并准确判断中间位置箭头所指的方向，不用管旁边的箭头方向。',
+          '如果中间的箭头指向左边，请快速按红色键。',
+          '如果中间的箭头指向右边，请快速按蓝色键；'
+        ].join('<br/>')
+        content[this.TYPE_IQ] = '请在40分钟内作答下列60道题。'
       }
-      zhCN[this.TYPE_LEX_UG] = [
-        '你将会看到一系列单词。',
-        '如果该单词为真维文词，请迅速按红色键；',
-        '如果该单词为假维文词，请迅速按蓝色键。'
-      ].join('<br/>')
-      zhCN[this.TYPE_LEX_CN] = [
-        '你将会看到一系列汉字。',
-        '如果该字为真汉字，请按红色键；',
-        '如果该字为假汉字，请按蓝色键。'
-      ].join('<br/>')
-      zhCN[this.TYPE_PIC] = [
-        '你将分别用维语和汉语对出现的图片进行命名。',
-        '看到提示字为“说”时，请迅速用汉语命名接下来出现的图片；',
-        '看到提示字为“ -سۆزله”时，请迅速用维语命名接下来出现的图片。',
-        '请既快又准确地给图片命名。'
-      ].join('<br/>')
-      zhCN[this.TYPE_SIMON] = [
-        '在实验中，看到红色圆形时，请快速按红色键；',
-        '看到蓝色圆形时，请快速按蓝色键，不用管图形出现在屏幕中的位置。',
-        '请既快又准确地做出相应判断。'
-      ].join('<br/>')
-      zhCN[this.TYPE_FLANKER] = [
-        '你将会看到一系列的箭头，请快速并准确判断中间位置箭头所指的方向，不用管旁边的箭头方向。',
-        '如果中间的箭头指向左边，请快速按红色键。',
-        '如果中间的箭头指向右边，请快速按蓝色键；'
-      ].join('<br/>')
-      zhCN[this.TYPE_IQ] = '请在40分钟内作答下列60道题。'
 
-      const enUS = {
-        header: 'Welcome to the experiment!',
-        footer: 'Press SPACE bar to start the experiment.'
-      }
-      enUS[this.TYPE_LEX_UG] = [
-        'Now you will be presented with a series of words.',
-        'If the stimulus is a real Uyghur word, press “Red” key as quick as possible;',
-        'If the stimulus is a non-Uyghur word, press “Blue” key as quick as possible.'
-      ].join('<br/>')
-      enUS[this.TYPE_LEX_CN] = [
-        'Now you will be presented with a series of characters.',
-        'If the stimulus is a real Chinese character, press ”Red” key as quick as possible;',
-        'If the stimulus is a non-Chinese character, press “Blue” key as quick as possible.'
-      ].join('<br/>')
-      enUS[this.TYPE_PIC] = [
-        'You will be required to name pictures respectively in Uyghur and Chinese.',
-        'If you see the cue “说”, speak out the name of following picture in Chinese as quickly as possible;',
-        'if you see the cue “-سۆزله”, speak out the name of following picture in Uyghur as quickly as possible.',
-        'Try to name the picture as quickly and accurately as possible.'
-      ].join('<br/>')
-      enUS[this.TYPE_SIMON] = [
-        'In the experiment, if you see the red circle, press “Red” key as quickly as possible;',
-        'if you see the blue circle, press “Blue” key as quickly as possible, regardless of its location on the screen.',
-        'Press the correct key as quickly as possible.'
-      ].join('<br/>')
-      enUS[this.TYPE_FLANKER] = [
-        'You will be presented with a series of arrows, choose the direction pointed by the arrow in the CENTRE as quickly as you can, regardless of the direction of other surrounding arrows.',
-        'If the arrow in the centre is pointing to the left, press the “Red” key.',
-        'If the arrow in the centre is pointing to the right, press the “Blue” key;'
-      ].join('<br/>')
-      enUS[this.TYPE_IQ] = 'Please answer the following 60 questions within 40 minutes.'
-
-      return zhCN
+      return content
     }
   },
   components: {
