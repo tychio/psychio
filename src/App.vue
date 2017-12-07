@@ -15,6 +15,9 @@
             :src="'./static/lexical-decision/' + lang + '-' + kind + '/' + name + '.png'">
         </template>
       </li>
+      <li v-for="item in designs['iq-tester']">
+        <img :src="'./static/iq-tester/' + item.Q + '.jpg'">
+      </li>
     </ul>
   </div>
 </template>
