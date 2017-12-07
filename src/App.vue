@@ -4,7 +4,7 @@
       <img src="./assets/logo.png">
       <span>sychio</span>
     </h1>
-    <Dashboard :design="designs"></Dashboard>
+    <Dashboard :design="designs" :demo="demo"></Dashboard>
     <ul class="transparent">
       <li v-for="name in designs['picture-naming']">
         <img :src="'./static/picture-naming/' + name + '.gif'">
@@ -31,7 +31,7 @@ export default {
     const json = `{
       "picture-naming": [
         "001", "002", "003", "004", "005", "006", "007", "008", "009", "010",
-        "011", "012", "013", "014", "015", "016"
+        "011"
       ],
       "lexical-decision": {
         "chinese": {
@@ -58,9 +58,27 @@ export default {
         { "Q": "A5", "A": 6 }
       ]
     }`
-    const designs = JSON.parse(json)
+    const demo = `{
+      "picture-naming": [ "001", "002", "003" ],
+      "lexical-decision": {
+        "chinese": {
+          "words": [ "001", "002" ],
+          "nonwords": [ "001", "002" ]
+        },
+        "uyghur": {  
+          "words": [ "001", "002" ],
+          "nonwords": [ "001", "002" ]
+        }
+      },
+      "iq-tester": [
+        { "Q": "A2", "A": 5 },
+        { "Q": "A3", "A": 1 },
+        { "Q": "A4", "A": 2 }
+      ]
+    }`
     return {
-      designs: designs
+      designs: JSON.parse(json),
+      demo: JSON.parse(demo)
     }
   },
   components: {

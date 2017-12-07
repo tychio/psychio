@@ -13,6 +13,9 @@
         </md-input-container>
       </div>
       <md-input-container>
+        <md-switch v-model="realMode">{{realMode ? '实测' : '示例'}}模式</md-switch>
+      </md-input-container>
+      <md-input-container>
         <label>Test Type/测试类型</label>
         <md-select name="type" v-model="type">
           <md-option :value="TYPE_PIC">Picture Naming/图片命名</md-option>
@@ -92,7 +95,7 @@ import IQTester from './IQTester'
 
 export default {
   name: 'Dashboard',
-  props: ['design'],
+  props: ['design', 'demo'],
   data () {
     let data = {
       type: '',
@@ -108,7 +111,8 @@ export default {
       SECTION_COUNT: 6,
       showError: false,
       yourname: '',
-      contact: ''
+      contact: '',
+      realMode: false
     }
     data.type = data.TYPE_PIC
     data.results[data.TYPE_PIC] = []
@@ -344,7 +348,11 @@ export default {
   },
   computed: {
     items: function () {
-      return this.design[this.type]
+      if (this.realMode) {
+        return this.design[this.type]
+      } else {
+        return this.demo[this.type]
+      }
     },
     sumType: function () {
       let type = this.type
@@ -398,5 +406,9 @@ export default {
 
 .error {
   color: #cc5500;
+}
+
+.md-switch label {
+  position: static;
 }
 </style>
