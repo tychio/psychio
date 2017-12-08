@@ -33,7 +33,7 @@
     </form>
     <div class="error" v-if="showError && !contact">Please enter contact/请填写联系方式</div>
     <md-button class="md-raised md-accent" @click.native="start">Start</md-button>
-    <md-button v-if="hasData" class="md-raised md-warn" @click.native="download">Download</md-button>
+    <md-button v-if="hasData" class="md-raised md-primary" @click.native="download">Export</md-button>
   </section>
   <section :class="['container', {
     'processing': current >= 0
