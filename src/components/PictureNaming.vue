@@ -86,7 +86,7 @@ export default {
     languageSay: function () {
       return {
         chinese: '说',
-        uyghur: '-سۆزله',
+        uyghur: 'سۆزلەڭ',
         english: 'Say'
       }[this.item.language]
     },
