@@ -142,7 +142,8 @@ export default {
   width: 100%;
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: contain;
+  background-size: auto;
+  transform: scale(1.125);
 }
 
 .stage i.icon {
@@ -172,6 +173,7 @@ i.icon.icon-dot:before {
 
 .stage-prompt i.icon.icon-lang {
   white-space: nowrap;
+  font-size: 56px;
 }
 
 .stage-prompt i.icon.icon-lang,
