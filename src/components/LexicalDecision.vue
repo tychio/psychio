@@ -112,7 +112,8 @@ export default {
   width: 100%;
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: contain;
+  background-size: auto;
+  transform: scale(0.25);
 }
 
 .feedback {

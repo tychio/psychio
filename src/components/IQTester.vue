@@ -64,7 +64,7 @@ export default {
     this.status = 'playing'
     this.endTimeout = setTimeout(() => {
       this.status = 'end'
-    }, 60000)
+    }, 40 * 60 * 1000)
   },
   directives: {
     focus: {

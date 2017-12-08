@@ -451,7 +451,10 @@ export default {
           '如果中间的箭头指向左边，请快速按红色键。',
           '如果中间的箭头指向右边，请快速按蓝色键；'
         ].join('<br/>')
-        content[this.TYPE_IQ] = '请在40分钟内作答下列60道题。'
+        content[this.TYPE_IQ] = [
+          '请在40分钟内作答下列60道题。',
+          '请按相应的数字键进行作答。'
+        ].join('<br>')
       }
 
       return content
