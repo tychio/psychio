@@ -118,8 +118,12 @@ export default {
 
 .feedback {
   display: none;
-  font-size: 54px;
-  margin-top: 50%;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  font-size: 36px;
 }
 
 .stage i.icon {

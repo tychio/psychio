@@ -73,8 +73,8 @@
         <span>{{result.name}} - ({{result.response}}ms)</span>
         <span>[{{result.language}}]</span>
         <small>Choice/选择(Fact/实际)：{{result.right ? 'True/真' : 'False/假'}}({{!result.isNon ? 'True/真' : 'False/假'}})</small>
-        <md-icon v-if="result.right !== result.isNon" md-theme="green" class="md-primary">done</md-icon>
-        <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
+        <md-icon v-if="result.right !== result.isNon" md-theme="green" class="md-primary">∨</md-icon>
+        <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
       </md-list-item>
     </md-list>
     <md-list v-if="type === TYPE_IQ">
@@ -84,8 +84,8 @@
         </md-avatar>
         <span>{{result.name}} - ({{result.response}}ms)</span>
         <span>Answer/答案 - Choice/作答：<small>{{result.answer}}</small> - {{result.choice}}</span>
-        <md-icon v-if="result.answer === result.choice" md-theme="green" class="md-primary">done</md-icon>
-        <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
+        <md-icon v-if="result.answer === result.choice" md-theme="green" class="md-primary">∨</md-icon>
+        <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
       </md-list-item>
     </md-list>
   </section>
