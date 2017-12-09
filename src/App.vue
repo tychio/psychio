@@ -55,6 +55,14 @@ export default {
         { "Q": "A3", "A": 1 },
         { "Q": "A4", "A": 2 },
         { "Q": "A5", "A": 6 }
+      ],
+      "flanker": [
+        { "count": 4, "type": "con", "direction": "right" },
+        { "count": 4, "type": "con", "direction": "left" },
+        { "count": 4, "type": "incon", "direction": "right" },
+        { "count": 4, "type": "incon", "direction": "left" },
+        { "count": 4, "type": "neu", "direction": "right" },
+        { "count": 4, "type": "neu", "direction": "left" }
       ]
     }`
     const demo = `{
@@ -73,6 +81,14 @@ export default {
         { "Q": "A2", "A": 5 },
         { "Q": "A3", "A": 1 },
         { "Q": "A4", "A": 2 }
+      ],
+      "flanker": [
+        { "count": 4, "type": "con", "direction": "right" },
+        { "count": 4, "type": "con", "direction": "left" },
+        { "count": 4, "type": "incon", "direction": "right" },
+        { "count": 4, "type": "incon", "direction": "left" },
+        { "count": 4, "type": "neu", "direction": "right" },
+        { "count": 4, "type": "neu", "direction": "left" }
       ]
     }`
     return {

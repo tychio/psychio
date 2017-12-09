@@ -20,6 +20,7 @@
         <md-select name="type" v-model="type">
           <md-option :value="TYPE_PIC">Picture Naming/图片命名</md-option>
           <md-option :value="TYPE_LEX">Lexical Decision/词汇判断</md-option>
+          <md-option :value="TYPE_FLANKER">Flanker/箭头测试</md-option>
           <md-option :value="TYPE_IQ">IQ Test/IQ测试</md-option>
         </md-select>
       </md-input-container>
@@ -99,6 +100,7 @@ import * as screenfull from 'screenfull'
 import { saveAs } from 'file-saver'
 import PictureNaming from './PictureNaming'
 import LexicalDecision from './LexicalDecision'
+import Flanker from './Flanker'
 import IQTester from './IQTester'
 
 export default {
@@ -132,6 +134,7 @@ export default {
     data.results[data.TYPE_LEX_CN] = []
     data.results[data.TYPE_LEX_UG] = []
     data.results[data.TYPE_IQ] = []
+    data.results[data.TYPE_FLANKER] = []
     return data
   },
   methods: {
@@ -153,6 +156,7 @@ export default {
         })
       }
       this.list = this.random()
+      console.log('list', this.list)
       this.$nextTick(() => {
         this.current = 0
       })
@@ -172,7 +176,7 @@ export default {
         } else {
           setTimeout(() => {
             this.current++
-          }, 500)
+          }, 250)
         }
       }
     },
@@ -181,8 +185,15 @@ export default {
       mapper[this.TYPE_PIC] = 'randomPictures'
       mapper[this.TYPE_LEX] = 'randomLexical'
       mapper[this.TYPE_IQ] = 'randomIQ'
+      mapper[this.TYPE_FLANKER] = 'randomFlanker'
       const methodName = mapper[this.type]
-      return this[methodName]()
+      const list = this[methodName]()
+      return _.sampleSize(list, list.length)
+    },
+    randomFlanker: function () {
+      return _.flatMap(this.items, item => {
+        return _.fill(Array(item.count), item)
+      })
     },
     randomIQ: function () {
       return this.items
@@ -463,6 +474,7 @@ export default {
   components: {
     'picture-naming': PictureNaming,
     'lexical-decision': LexicalDecision,
+    'flanker': Flanker,
     'iq-tester': IQTester
   }
 }
