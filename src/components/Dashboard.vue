@@ -95,6 +95,24 @@
         </span>
       </md-list-item>
     </md-list>
+    <md-list v-if="type === TYPE_SIMON">
+      <md-list-item v-for="(result, index) in results[sumType]" key="index">
+        <md-avatar :style="{background: result.type === 'blue' ? '#0c83e8' : '#e80d0d'}">
+        </md-avatar>
+        <span>
+          <template v-if="result.type === 'blue'">Blue/蓝色</template>
+          <template v-else-if="result.type === 'red'">Red/红色</template>
+          <small>Position/位置: {{result.direction}}</small>
+        </span>
+        <span>
+          <small>Selection/选择: </small>
+          <strong>{{result.selection}}</strong>
+          <small> - {{result.response}}ms</small>
+          <md-icon v-if="result.selection === result.direction" md-theme="green" class="md-primary">∨</md-icon>
+          <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
+        </span>
+      </md-list-item>
+    </md-list>
     <md-list v-if="type === TYPE_IQ">
       <md-list-item v-for="(result, index) in results[sumType]" key="index">
         <md-avatar>

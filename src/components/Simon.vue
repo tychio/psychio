@@ -92,7 +92,7 @@ export default {
     }
   },
   mounted: function () {
-    this.steps = [500, 250, 200000000, 250]
+    this.steps = [500, 250, 2000, 250]
     this.setStatus('start')
     this.setStatus('ready', this.steps[0])
     this.setStatus('playing', _.sum(_.slice(this.steps, 0, 2)))
