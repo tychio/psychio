@@ -20,6 +20,8 @@
         <md-select name="type" v-model="type">
           <md-option :value="TYPE_PIC">Picture Naming/图片命名</md-option>
           <md-option :value="TYPE_LEX">Lexical Decision/词汇判断</md-option>
+          <md-option :value="TYPE_FLANKER">Flanker/箭头测试</md-option>
+          <md-option :value="TYPE_SIMON">Simon/西蒙测试</md-option>
           <md-option :value="TYPE_IQ">IQ Test/IQ测试</md-option>
         </md-select>
       </md-input-container>
@@ -33,7 +35,7 @@
     </form>
     <div class="error" v-if="showError && !contact">Please enter contact/请填写联系方式</div>
     <md-button class="md-raised md-accent" @click.native="start">Start</md-button>
-    <md-button v-if="hasData" class="md-raised md-warn" @click.native="download">Download</md-button>
+    <md-button v-if="hasData && realMode" class="md-raised md-primary" @click.native="download">Export</md-button>
   </section>
   <section :class="['container', {
     'processing': current >= 0
@@ -73,8 +75,42 @@
         <span>{{result.name}} - ({{result.response}}ms)</span>
         <span>[{{result.language}}]</span>
         <small>Choice/选择(Fact/实际)：{{result.right ? 'True/真' : 'False/假'}}({{!result.isNon ? 'True/真' : 'False/假'}})</small>
-        <md-icon v-if="result.right !== result.isNon" md-theme="green" class="md-primary">done</md-icon>
-        <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
+        <md-icon v-if="result.right !== result.isNon" md-theme="green" class="md-primary">∨</md-icon>
+        <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
+      </md-list-item>
+    </md-list>
+    <md-list v-if="type === TYPE_FLANKER">
+      <md-list-item v-for="(result, index) in results[sumType]" key="index">
+        <span>
+          <template v-if="result.type === 'con'">Congruent/一致</template>
+          <template v-else-if="result.type === 'incon'">Incongruent/不一致</template>
+          <template v-else-if="result.type === 'neu'">Neutral/中立</template>
+        </span>
+        <span>
+          <small>Selection/选择: </small>
+          <strong>{{result.selection}}</strong>
+          <small> - {{result.response}}ms</small>
+          <md-icon v-if="result.selection === result.direction" md-theme="green" class="md-primary">∨</md-icon>
+          <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
+        </span>
+      </md-list-item>
+    </md-list>
+    <md-list v-if="type === TYPE_SIMON">
+      <md-list-item v-for="(result, index) in results[sumType]" key="index">
+        <md-avatar :style="{background: result.type === 'blue' ? '#0c83e8' : '#e80d0d'}">
+        </md-avatar>
+        <span>
+          <template v-if="result.type === 'blue'">Blue/蓝色</template>
+          <template v-else-if="result.type === 'red'">Red/红色</template>
+          <small>Position/位置: {{result.direction}}</small>
+        </span>
+        <span>
+          <small>Selection/选择: </small>
+          <strong>{{result.selection}}</strong>
+          <small> - {{result.response}}ms</small>
+          <md-icon v-if="result.selection === result.direction" md-theme="green" class="md-primary">∨</md-icon>
+          <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
+        </span>
       </md-list-item>
     </md-list>
     <md-list v-if="type === TYPE_IQ">
@@ -84,8 +120,8 @@
         </md-avatar>
         <span>{{result.name}} - ({{result.response}}ms)</span>
         <span>Answer/答案 - Choice/作答：<small>{{result.answer}}</small> - {{result.choice}}</span>
-        <md-icon v-if="result.answer === result.choice" md-theme="green" class="md-primary">done</md-icon>
-        <md-icon v-else md-theme="orange" class="md-warn">clear</md-icon>
+        <md-icon v-if="result.answer === result.choice" md-theme="green" class="md-primary">∨</md-icon>
+        <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
       </md-list-item>
     </md-list>
   </section>
@@ -99,6 +135,8 @@ import * as screenfull from 'screenfull'
 import { saveAs } from 'file-saver'
 import PictureNaming from './PictureNaming'
 import LexicalDecision from './LexicalDecision'
+import Flanker from './Flanker'
+import Simon from './Simon'
 import IQTester from './IQTester'
 
 export default {
@@ -118,6 +156,7 @@ export default {
       current: -1,
       list: [],
       results: {},
+      demoData: {},
       SECTION_COUNT: 6,
       showError: false,
       yourname: '',
@@ -132,6 +171,14 @@ export default {
     data.results[data.TYPE_LEX_CN] = []
     data.results[data.TYPE_LEX_UG] = []
     data.results[data.TYPE_IQ] = []
+    data.results[data.TYPE_FLANKER] = []
+    data.results[data.TYPE_SIMON] = []
+    data.demoData[data.TYPE_PIC] = []
+    data.demoData[data.TYPE_LEX_CN] = []
+    data.demoData[data.TYPE_LEX_UG] = []
+    data.demoData[data.TYPE_IQ] = []
+    data.demoData[data.TYPE_FLANKER] = []
+    data.demoData[data.TYPE_SIMON] = []
     return data
   },
   methods: {
@@ -153,6 +200,7 @@ export default {
         })
       }
       this.list = this.random()
+      console.log('list', this.list)
       this.$nextTick(() => {
         this.current = 0
       })
@@ -164,7 +212,11 @@ export default {
     },
     next: function (result) {
       if (result) {
-        this.results[this.sumType].push(result)
+        if (this.realMode) {
+          this.results[this.sumType].push(result)
+        } else {
+          this.demoData[this.sumType].push(result)
+        }
 
         if (this.current === this.list.length) {
           this.current = -1
@@ -172,7 +224,7 @@ export default {
         } else {
           setTimeout(() => {
             this.current++
-          }, 500)
+          }, 250)
         }
       }
     },
@@ -181,8 +233,16 @@ export default {
       mapper[this.TYPE_PIC] = 'randomPictures'
       mapper[this.TYPE_LEX] = 'randomLexical'
       mapper[this.TYPE_IQ] = 'randomIQ'
+      mapper[this.TYPE_FLANKER] = 'randomExperiment'
+      mapper[this.TYPE_SIMON] = 'randomExperiment'
       const methodName = mapper[this.type]
-      return this[methodName]()
+      const list = this[methodName]()
+      return _.sampleSize(list, list.length)
+    },
+    randomExperiment: function () {
+      return _.flatMap(this.items, item => {
+        return _.fill(Array(item.count), item)
+      })
     },
     randomIQ: function () {
       return this.items
@@ -278,14 +338,14 @@ export default {
           return item
         })
       })
-      return _.sampleSize(itemGroups, this.SECTION_COUNT)
+      return _.sampleSize(itemGroups, this.sectionCount)
     },
     groupImages: function (imgs) {
       const imageCountInGroup = imgs.length
-      const minRange = imageCountInGroup - this.SECTION_COUNT
-      const maxRange = imageCountInGroup + this.SECTION_COUNT
+      const minRange = imageCountInGroup - this.sectionCount
+      const maxRange = imageCountInGroup + this.sectionCount
       let left = 0
-      const groups = _.chain(Array(this.SECTION_COUNT)).map((val, index) => {
+      const groups = _.chain(Array(this.sectionCount)).map((val, index) => {
         return (function (self) {
           let min = minRange
           let max = maxRange
@@ -294,7 +354,7 @@ export default {
           } else {
             max += left
           }
-          if (index + 1 === self.SECTION_COUNT) {
+          if (index + 1 === self.sectionCount) {
             return imageCountInGroup + left
           } else {
             const size = _.random(min, max)
@@ -303,7 +363,7 @@ export default {
           }
         })(this)
       }).sortBy(size => size).value()
-      const pool = _.flatten(_.fill(Array(this.SECTION_COUNT), imgs))
+      const pool = _.flatten(_.fill(Array(this.sectionCount), imgs))
       let currentIndex = 0
       console.log('Sum:', _.sum(groups))
       console.log('Group count:', groups.join(','))
@@ -372,6 +432,9 @@ export default {
         return this.demo[this.type]
       }
     },
+    sectionCount: function () {
+      return this.realMode ? this.SECTION_COUNT : 1
+    },
     sumType: function () {
       let type = this.type
       if (type === this.TYPE_LEX) {
@@ -406,12 +469,12 @@ export default {
         content[this.TYPE_PIC] = [
           'You will be required to name pictures respectively in Uyghur and Chinese.',
           'If you see the cue “说”, speak out the name of following picture in Chinese as quickly as possible;',
-          'if you see the cue “-سۆزله”, speak out the name of following picture in Uyghur as quickly as possible.',
+          'if you see the cue “سۆزلەڭ”, speak out the name of following picture in Uyghur as quickly as possible.',
           'Try to name the picture as quickly and accurately as possible.'
         ].join('<br/>')
         content[this.TYPE_SIMON] = [
-          'In the experiment, if you see the red circle, press “Red” key as quickly as possible;',
-          'if you see the blue circle, press “Blue” key as quickly as possible, regardless of its location on the screen.',
+          'In the experiment, if you see the red square, press “Red” key as quickly as possible;',
+          'if you see the blue square, press “Blue” key as quickly as possible, regardless of its location on the screen.',
           'Press the correct key as quickly as possible.'
         ].join('<br/>')
         content[this.TYPE_FLANKER] = [
@@ -438,12 +501,12 @@ export default {
         content[this.TYPE_PIC] = [
           '你将分别用维语和汉语对出现的图片进行命名。',
           '看到提示字为“说”时，请迅速用汉语命名接下来出现的图片；',
-          '看到提示字为“ -سۆزله”时，请迅速用维语命名接下来出现的图片。',
+          '看到提示字为“ سۆزلەڭ”时，请迅速用维语命名接下来出现的图片。',
           '请既快又准确地给图片命名。'
         ].join('<br/>')
         content[this.TYPE_SIMON] = [
-          '在实验中，看到红色圆形时，请快速按红色键；',
-          '看到蓝色圆形时，请快速按蓝色键，不用管图形出现在屏幕中的位置。',
+          '在实验中，看到红色方块时，请快速按红色键；',
+          '看到蓝色方块时，请快速按蓝色键，不用管图形出现在屏幕中的位置。',
           '请既快又准确地做出相应判断。'
         ].join('<br/>')
         content[this.TYPE_FLANKER] = [
@@ -451,7 +514,10 @@ export default {
           '如果中间的箭头指向左边，请快速按红色键。',
           '如果中间的箭头指向右边，请快速按蓝色键；'
         ].join('<br/>')
-        content[this.TYPE_IQ] = '请在40分钟内作答下列60道题。'
+        content[this.TYPE_IQ] = [
+          '请在40分钟内作答下列60道题。',
+          '请按相应的数字键进行作答。'
+        ].join('<br>')
       }
 
       return content
@@ -460,6 +526,8 @@ export default {
   components: {
     'picture-naming': PictureNaming,
     'lexical-decision': LexicalDecision,
+    'flanker': Flanker,
+    'simon': Simon,
     'iq-tester': IQTester
   }
 }
@@ -486,7 +554,7 @@ export default {
 
 .instruction-content {
   width: 80%;
-  margin: 35% auto 0;
+  margin: 300px auto 0;
   font-size: 20px;
 }
 
@@ -525,5 +593,10 @@ export default {
 
 .md-switch label.md-switch-label {
   position: static;
+}
+
+i.icon.icon-cross:before {
+  font-size: 90px;
+  font-family: sans-serif;
 }
 </style>

@@ -86,7 +86,7 @@ export default {
     languageSay: function () {
       return {
         chinese: '说',
-        uyghur: '-سۆزله',
+        uyghur: 'سۆزلەڭ',
         english: 'Say'
       }[this.item.language]
     },
@@ -142,7 +142,8 @@ export default {
   width: 100%;
   background-repeat: no-repeat;
   background-position: center center;
-  background-size: contain;
+  background-size: auto;
+  transform: scale(1.125);
 }
 
 .stage i.icon {
@@ -163,6 +164,7 @@ i.icon.icon-cross:before {
 }
 i.icon.icon-asterisk:before {
   content: '*';
+  line-height: 240px;
 }
 
 i.icon.icon-dot:before {
@@ -172,6 +174,7 @@ i.icon.icon-dot:before {
 
 .stage-prompt i.icon.icon-lang {
   white-space: nowrap;
+  font-size: 56px;
 }
 
 .stage-prompt i.icon.icon-lang,

@@ -30,8 +30,7 @@ export default {
   data: function () {
     const json = `{
       "picture-naming": [
-        "001", "002", "003", "004", "005", "006", "007", "008", "009", "010",
-        "011", "012", "013", "014", "015", "016"
+        "015", "016", "027", "040", "044", "105", "109", "128", "155", "215", "222"
       ],
       "lexical-decision": {
         "chinese": {
@@ -56,24 +55,56 @@ export default {
         { "Q": "A3", "A": 1 },
         { "Q": "A4", "A": 2 },
         { "Q": "A5", "A": 6 }
+      ],
+      "flanker": [
+        { "count": 21, "type": "con", "direction": "right" },
+        { "count": 21, "type": "con", "direction": "left" },
+        { "count": 21, "type": "incon", "direction": "right" },
+        { "count": 21, "type": "incon", "direction": "left" },
+        { "count": 21, "type": "neu", "direction": "right" },
+        { "count": 21, "type": "neu", "direction": "left" }
+      ],
+      "simon": [
+        { "count": 21, "type": "red", "direction": "right" },
+        { "count": 21, "type": "red", "direction": "left" },
+        { "count": 21, "type": "red", "direction": "center" },
+        { "count": 21, "type": "blue", "direction": "right" },
+        { "count": 21, "type": "blue", "direction": "left" },
+        { "count": 21, "type": "blue", "direction": "center" }
       ]
     }`
     const demo = `{
-      "picture-naming": [ "001", "002", "003" ],
+      "picture-naming": [ "001", "002", "003", "004", "005"],
       "lexical-decision": {
         "chinese": {
-          "words": [ "001", "002" ],
-          "nonwords": [ "001", "002" ]
+          "words": [ "001", "002", "003" ],
+          "nonwords": [ "001", "002", "003" ]
         },
         "uyghur": {  
-          "words": [ "001", "002" ],
-          "nonwords": [ "001", "002" ]
+          "words": [ "001", "002", "003" ],
+          "nonwords": [ "001", "002", "003" ]
         }
       },
       "iq-tester": [
         { "Q": "A2", "A": 5 },
         { "Q": "A3", "A": 1 },
         { "Q": "A4", "A": 2 }
+      ],
+      "flanker": [
+        { "count": 4, "type": "con", "direction": "right" },
+        { "count": 4, "type": "con", "direction": "left" },
+        { "count": 4, "type": "incon", "direction": "right" },
+        { "count": 4, "type": "incon", "direction": "left" },
+        { "count": 4, "type": "neu", "direction": "right" },
+        { "count": 4, "type": "neu", "direction": "left" }
+      ],
+      "simon": [
+        { "count": 4, "type": "red", "direction": "right" },
+        { "count": 4, "type": "red", "direction": "left" },
+        { "count": 4, "type": "red", "direction": "center" },
+        { "count": 4, "type": "blue", "direction": "right" },
+        { "count": 4, "type": "blue", "direction": "left" },
+        { "count": 4, "type": "blue", "direction": "center" }
       ]
     }`
     return {

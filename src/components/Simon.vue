@@ -1,12 +1,11 @@
 <template>
   <div v-show="status" :class="['stage', 'stage-' + status]">
-    <div class="stage-pic" :style="{
-      'background-image': 'url(' + imageSrc + ')'
-    }"></div>
+    <div class="stage-cycle">
+      <span :class="[result.type, result.direction]"></span>
+    </div>
     <div class="feedback">{{feedback}}</div>
     <i class="icon icon-cross"></i>
-    <i class="icon icon-dot"></i>
-    <input type="text" v-focus v-if="status === 'playing'" @keyup="end">
+    <input class="transparent" type="text" v-focus v-if="status === 'playing'" @keyup="end">
   </div>
 </template>
 
@@ -14,24 +13,22 @@
 import * as _ from 'lodash'
 
 export default {
-  name: 'LexicalDecision',
-  props: ['item', 'language'],
+  name: 'Simon',
+  props: ['item'],
   data: function () {
     return {
       KEY: {
-        REAL: 65,
-        FAKE: 76
+        RED: 65,
+        BLUE: 76
       },
       startDate: 0,
       status: null,
       steps: [],
       result: {
-        name: this.item.name,
-        isNon: this.item.isNon,
-        response: 0,
-        right: null,
-        language: this.language,
-        src: ''
+        type: this.item.type,
+        direction: this.item.direction,
+        selection: null,
+        response: 0
       }
     }
   },
@@ -52,22 +49,21 @@ export default {
       if (!event) {
         this.record()
       } else if (this.status === 'playing') {
-        this.record()
-        if (event.keyCode === this.KEY.REAL) {
-          this.result.right = true
-        } else if (event.keyCode === this.KEY.FAKE) {
-          this.result.right = false
+        if (event.keyCode === this.KEY.BLUE) {
+          this.result.selection = 'blue'
+        } else if (event.keyCode === this.KEY.RED) {
+          this.result.selection = 'red'
         }
-        if (this.result.right !== null) {
+        if (this.result.selection) {
           clearTimeout(this.endTimeout)
           this.setStatus('feedback')
+          this.record()
         }
       }
     },
     record: function () {
       if (this.startDate) {
         this.result.response = new Date() - this.startDate
-        this.result.src = this.imageSrc
         this.startDate = 0
       }
     },
@@ -82,21 +78,21 @@ export default {
     }
   },
   computed: {
-    imageSrc: function () {
-      return './static/lexical-decision/' + this.language + '-' + (this.item.isNon ? 'nonwords' : 'words') + '/' + this.item.name + '.png'
-    },
     feedback: function () {
       let feedback = ''
-      if (this.result.right === null) {
+      if (this.result.selection === null) {
         feedback = '反应超时'
       } else {
-        feedback = this.result.right !== this.result.isNon ? '正确' : '错误'
+        feedback = this.isCorrect ? '正确' : '错误'
       }
       return feedback
+    },
+    isCorrect: function () {
+      return this.result.selection === this.result.type
     }
   },
   mounted: function () {
-    this.steps = [1000, 500, 4000, 500]
+    this.steps = [500, 250, 2000, 250]
     this.setStatus('start')
     this.setStatus('ready', this.steps[0])
     this.setStatus('playing', _.sum(_.slice(this.steps, 0, 2)))
@@ -116,14 +112,37 @@ export default {
   background-color: white;
 }
 
-.stage-pic {
+.stage-cycle {
   display: none;
-  height: 100%;
+  position: absolute;
+  top: 50%;
   width: 100%;
-  background-repeat: no-repeat;
-  background-position: center center;
-  background-size: auto;
-  transform: scale(0.25);
+}
+
+.stage-cycle span {
+  display: inline-block;
+  position: absolute;
+  z-index: 1000;
+  left: 50%;
+  height: 100px;
+  width: 100px;
+  margin: -50px;
+}
+
+.stage-cycle span.right {
+  transform: translate(200px);
+}
+
+.stage-cycle span.left {
+  transform: translate(-200px);
+}
+
+.stage-cycle span.blue {
+  background-color: #0c83e8; 
+}
+
+.stage-cycle span.red {
+  background-color: #e80d0d;
 }
 
 .feedback {
@@ -153,18 +172,12 @@ i.icon.icon-cross:before {
   content: '+';
 }
 
-i.icon.icon-dot:before {
-  content: '\00b7';
-  font-size: 200px;
-}
-
-.stage-prompt i.icon.icon-lang,
-.stage-saying i.icon.icon-dot,
-.stage-start i.icon.icon-cross {
+.stage-start i.icon.icon-cross,
+.stage-playing i.icon.icon-cross {
   display: block;
 }
 
-.stage-playing .stage-pic {
+.stage-playing .stage-cycle {
   display: block;
 }
 
@@ -175,4 +188,5 @@ i.icon.icon-dot:before {
 .stage-end {
   display: none;
 }
+
 </style>
