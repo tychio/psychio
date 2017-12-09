@@ -18,6 +18,10 @@ export default {
   props: ['item', 'language'],
   data: function () {
     return {
+      KEY: {
+        REAL: 65,
+        FAKE: 76
+      },
       startDate: 0,
       status: null,
       steps: [],
@@ -48,10 +52,16 @@ export default {
       if (!event) {
         this.record()
       } else if (this.status === 'playing') {
-        clearTimeout(this.endTimeout)
-        this.setStatus('feedback')
         this.record()
-        this.result.right = (event.keyCode === 13)
+        if (event.keyCode === this.KEY.REAL) {
+          this.result.right = true
+        } else if (event.keyCode === this.KEY.FAKE) {
+          this.result.right = false
+        }
+        if (this.result.right !== null) {
+          clearTimeout(this.endTimeout)
+          this.setStatus('feedback')
+        }
       }
     },
     record: function () {
