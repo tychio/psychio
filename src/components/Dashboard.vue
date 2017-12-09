@@ -224,7 +224,7 @@ export default {
         } else {
           setTimeout(() => {
             this.current++
-          }, 250)
+          }, 500)
         }
       }
     },

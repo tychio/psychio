@@ -96,7 +96,7 @@ export default {
   },
   mounted: function () {
     this.loadRecorder()
-    const steps = [1000, 500, 700, 4000]
+    const steps = [1000, 250, 500, 4000]
     if (this.item.isEnd) {
       steps.push(1000)
     }
