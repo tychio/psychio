@@ -78,6 +78,22 @@
         <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
       </md-list-item>
     </md-list>
+    <md-list v-if="type === TYPE_FLANKER">
+      <md-list-item v-for="(result, index) in results[sumType]" key="index">
+        <span>
+          <template v-if="result.type === 'con'">Congruent/一致</template>
+          <template v-else-if="result.type === 'incon'">Incongruent/不一致</template>
+          <template v-else-if="result.type === 'neu'">Neutral/中立</template>
+        </span>
+        <span>
+          <small>Selection/选择: </small>
+          <strong>{{result.selection}}</strong>
+          <small> - {{result.response}}ms</small>
+          <md-icon v-if="result.selection === result.direction" md-theme="green" class="md-primary">∨</md-icon>
+          <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
+        </span>
+      </md-list-item>
+    </md-list>
     <md-list v-if="type === TYPE_IQ">
       <md-list-item v-for="(result, index) in results[sumType]" key="index">
         <md-avatar>
