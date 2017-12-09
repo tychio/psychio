@@ -327,14 +327,14 @@ export default {
           return item
         })
       })
-      return _.sampleSize(itemGroups, this.SECTION_COUNT)
+      return _.sampleSize(itemGroups, this.sectionCount)
     },
     groupImages: function (imgs) {
       const imageCountInGroup = imgs.length
-      const minRange = imageCountInGroup - this.SECTION_COUNT
-      const maxRange = imageCountInGroup + this.SECTION_COUNT
+      const minRange = imageCountInGroup - this.sectionCount
+      const maxRange = imageCountInGroup + this.sectionCount
       let left = 0
-      const groups = _.chain(Array(this.SECTION_COUNT)).map((val, index) => {
+      const groups = _.chain(Array(this.sectionCount)).map((val, index) => {
         return (function (self) {
           let min = minRange
           let max = maxRange
@@ -343,7 +343,7 @@ export default {
           } else {
             max += left
           }
-          if (index + 1 === self.SECTION_COUNT) {
+          if (index + 1 === self.sectionCount) {
             return imageCountInGroup + left
           } else {
             const size = _.random(min, max)
@@ -352,7 +352,7 @@ export default {
           }
         })(this)
       }).sortBy(size => size).value()
-      const pool = _.flatten(_.fill(Array(this.SECTION_COUNT), imgs))
+      const pool = _.flatten(_.fill(Array(this.sectionCount), imgs))
       let currentIndex = 0
       console.log('Sum:', _.sum(groups))
       console.log('Group count:', groups.join(','))
@@ -420,6 +420,9 @@ export default {
       } else {
         return this.demo[this.type]
       }
+    },
+    sectionCount: function () {
+      return this.realMode ? this.SECTION_COUNT : 1
     },
     sumType: function () {
       let type = this.type

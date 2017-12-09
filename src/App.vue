@@ -74,15 +74,15 @@ export default {
       ]
     }`
     const demo = `{
-      "picture-naming": [ "001", "002", "003" ],
+      "picture-naming": [ "001", "002", "003", "004", "005"],
       "lexical-decision": {
         "chinese": {
-          "words": [ "001", "002" ],
-          "nonwords": [ "001", "002" ]
+          "words": [ "001", "002", "003" ],
+          "nonwords": [ "001", "002", "003" ]
         },
         "uyghur": {  
-          "words": [ "001", "002" ],
-          "nonwords": [ "001", "002" ]
+          "words": [ "001", "002", "003" ],
+          "nonwords": [ "001", "002", "003" ]
         }
       },
       "iq-tester": [
