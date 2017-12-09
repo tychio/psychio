@@ -580,4 +580,9 @@ export default {
 .md-switch label.md-switch-label {
   position: static;
 }
+
+i.icon.icon-cross:before {
+  font-size: 90px;
+  font-family: sans-serif;
+}
 </style>

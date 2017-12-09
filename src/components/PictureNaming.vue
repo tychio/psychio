@@ -164,6 +164,7 @@ i.icon.icon-cross:before {
 }
 i.icon.icon-asterisk:before {
   content: '*';
+  line-height: 240px;
 }
 
 i.icon.icon-dot:before {
