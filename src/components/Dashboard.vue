@@ -113,17 +113,7 @@
         </span>
       </md-list-item>
     </md-list>
-    <md-list v-if="type === TYPE_IQ">
-      <md-list-item v-for="(result, index) in results[sumType]" key="index">
-        <md-avatar>
-          <img :src="result.src">
-        </md-avatar>
-        <span>{{result.name}} - ({{result.response}}ms)</span>
-        <span>Answer/答案 - Choice/作答：<small>{{result.answer}}</small> - {{result.choice}}</span>
-        <md-icon v-if="result.answer === result.choice" md-theme="green" class="md-primary">∨</md-icon>
-        <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
-      </md-list-item>
-    </md-list>
+    <div class="score" v-if="type === TYPE_IQ && IQscore">Score/最后得分：{{IQscore}}/60</div>
   </section>
 </main>
 </template>
@@ -236,13 +226,13 @@ export default {
       mapper[this.TYPE_FLANKER] = 'randomExperiment'
       mapper[this.TYPE_SIMON] = 'randomExperiment'
       const methodName = mapper[this.type]
-      const list = this[methodName]()
-      return _.sampleSize(list, list.length)
+      return this[methodName]()
     },
     randomExperiment: function () {
-      return _.flatMap(this.items, item => {
+      const list = _.flatMap(this.items, item => {
         return _.fill(Array(item.count), item)
       })
+      return _.sampleSize(list, list.length)
     },
     randomIQ: function () {
       return this.items
@@ -286,7 +276,8 @@ export default {
       const ChineseGroups = this.randomPictureGroup('chinese', this.groupImages(this.items))
       this.logPictures(uyghurGroups)
       this.logPictures(ChineseGroups)
-      return _.flattenDeep([uyghurGroups, ChineseGroups])
+      const groups = _.flattenDeep([uyghurGroups, ChineseGroups])
+      return _.sampleSize(groups, groups.length)
     },
     randomPictureGroup: function (languageName, imgGroups) {
       const languages = ['uyghur', 'chinese']
@@ -448,6 +439,9 @@ export default {
       const hasLexicalUyghur = this.results[this.TYPE_LEX_UG].length
       return hasPictures || hasLexicalChinese || hasLexicalUyghur
     },
+    IQscore: function () {
+      return _.countBy(this.results[this.TYPE_IQ], result => (result.answer === result.choice))['true']
+    },
     instructionContent: function () {
       let content = {}
       const params = window.location.search.match(/(l=)([\w-]+)/)
@@ -482,7 +476,10 @@ export default {
           'If the arrow in the centre is pointing to the left, press the “Red” key.',
           'If the arrow in the centre is pointing to the right, press the “Blue” key;'
         ].join('<br/>')
-        content[this.TYPE_IQ] = 'Please answer the following 60 questions within 40 minutes.'
+        content[this.TYPE_IQ] = [
+          'Please answer the following 60 questions within 40 minutes. 5 groups in all (A-E)， 12 questions for each group.',
+          'Please answer question with number'
+        ].join('<br/>')
       } else {
         content = {
           header: '欢迎参加实验！',
@@ -515,7 +512,7 @@ export default {
           '如果中间的箭头指向右边，请快速按蓝色键；'
         ].join('<br/>')
         content[this.TYPE_IQ] = [
-          '请在40分钟内作答下列60道题。',
+          '请在40分钟内作答下列60道题。共5组（A-E），每组各12题。',
           '请按相应的数字键进行作答。'
         ].join('<br>')
       }
@@ -598,5 +595,10 @@ export default {
 i.icon.icon-cross:before {
   font-size: 90px;
   font-family: sans-serif;
+}
+
+.score {
+  font-size: 32px;
+  line-height: 80px;
 }
 </style>
