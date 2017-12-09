@@ -371,7 +371,7 @@ export default {
         const result = _.slice(pool, currentIndex, currentIndex + count)
         currentIndex += count
         const randomResult = _.sampleSize(result, count)
-        return this.sortedWithSpace(randomResult, 3)
+        return this.sortedWithSpace(randomResult, this.realMode ? 3 : 1)
       })
       return results
     },
@@ -433,7 +433,7 @@ export default {
       }
     },
     sectionCount: function () {
-      return this.realMode ? this.SECTION_COUNT : 1
+      return this.realMode ? this.SECTION_COUNT : 2
     },
     sumType: function () {
       let type = this.type

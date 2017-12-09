@@ -74,7 +74,7 @@ export default {
       ]
     }`
     const demo = `{
-      "picture-naming": [ "001", "002", "003", "004", "005"],
+      "picture-naming": [ "001", "002", "003", "004" ],
       "lexical-decision": {
         "chinese": {
           "words": [ "001", "002", "003" ],
