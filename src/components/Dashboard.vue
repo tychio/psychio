@@ -35,7 +35,7 @@
     </form>
     <div class="error" v-if="showError && !contact">Please enter contact/请填写联系方式</div>
     <md-button class="md-raised md-accent" @click.native="start">Start</md-button>
-    <md-button v-if="hasData" class="md-raised md-primary" @click.native="download">Export</md-button>
+    <md-button v-if="hasData && realMode" class="md-raised md-primary" @click.native="download">Export</md-button>
   </section>
   <section :class="['container', {
     'processing': current >= 0
@@ -156,6 +156,7 @@ export default {
       current: -1,
       list: [],
       results: {},
+      demoData: {},
       SECTION_COUNT: 6,
       showError: false,
       yourname: '',
@@ -172,6 +173,12 @@ export default {
     data.results[data.TYPE_IQ] = []
     data.results[data.TYPE_FLANKER] = []
     data.results[data.TYPE_SIMON] = []
+    data.demoData[data.TYPE_PIC] = []
+    data.demoData[data.TYPE_LEX_CN] = []
+    data.demoData[data.TYPE_LEX_UG] = []
+    data.demoData[data.TYPE_IQ] = []
+    data.demoData[data.TYPE_FLANKER] = []
+    data.demoData[data.TYPE_SIMON] = []
     return data
   },
   methods: {
@@ -205,7 +212,11 @@ export default {
     },
     next: function (result) {
       if (result) {
-        this.results[this.sumType].push(result)
+        if (this.realMode) {
+          this.results[this.sumType].push(result)
+        } else {
+          this.demoData[this.sumType].push(result)
+        }
 
         if (this.current === this.list.length) {
           this.current = -1
