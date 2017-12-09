@@ -455,12 +455,12 @@ export default {
         content[this.TYPE_PIC] = [
           'You will be required to name pictures respectively in Uyghur and Chinese.',
           'If you see the cue “说”, speak out the name of following picture in Chinese as quickly as possible;',
-          'if you see the cue “-سۆزله”, speak out the name of following picture in Uyghur as quickly as possible.',
+          'if you see the cue “سۆزلەڭ”, speak out the name of following picture in Uyghur as quickly as possible.',
           'Try to name the picture as quickly and accurately as possible.'
         ].join('<br/>')
         content[this.TYPE_SIMON] = [
-          'In the experiment, if you see the red circle, press “Red” key as quickly as possible;',
-          'if you see the blue circle, press “Blue” key as quickly as possible, regardless of its location on the screen.',
+          'In the experiment, if you see the red square, press “Red” key as quickly as possible;',
+          'if you see the blue square, press “Blue” key as quickly as possible, regardless of its location on the screen.',
           'Press the correct key as quickly as possible.'
         ].join('<br/>')
         content[this.TYPE_FLANKER] = [
@@ -487,7 +487,7 @@ export default {
         content[this.TYPE_PIC] = [
           '你将分别用维语和汉语对出现的图片进行命名。',
           '看到提示字为“说”时，请迅速用汉语命名接下来出现的图片；',
-          '看到提示字为“ -سۆزله”时，请迅速用维语命名接下来出现的图片。',
+          '看到提示字为“ سۆزلەڭ”时，请迅速用维语命名接下来出现的图片。',
           '请既快又准确地给图片命名。'
         ].join('<br/>')
         content[this.TYPE_SIMON] = [
