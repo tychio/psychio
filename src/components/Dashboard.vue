@@ -21,6 +21,7 @@
           <md-option :value="TYPE_PIC">Picture Naming/图片命名</md-option>
           <md-option :value="TYPE_LEX">Lexical Decision/词汇判断</md-option>
           <md-option :value="TYPE_FLANKER">Flanker/箭头测试</md-option>
+          <md-option :value="TYPE_SIMON">Simon/西蒙测试</md-option>
           <md-option :value="TYPE_IQ">IQ Test/IQ测试</md-option>
         </md-select>
       </md-input-container>
@@ -117,6 +118,7 @@ import { saveAs } from 'file-saver'
 import PictureNaming from './PictureNaming'
 import LexicalDecision from './LexicalDecision'
 import Flanker from './Flanker'
+import Simon from './Simon'
 import IQTester from './IQTester'
 
 export default {
@@ -151,6 +153,7 @@ export default {
     data.results[data.TYPE_LEX_UG] = []
     data.results[data.TYPE_IQ] = []
     data.results[data.TYPE_FLANKER] = []
+    data.results[data.TYPE_SIMON] = []
     return data
   },
   methods: {
@@ -201,12 +204,13 @@ export default {
       mapper[this.TYPE_PIC] = 'randomPictures'
       mapper[this.TYPE_LEX] = 'randomLexical'
       mapper[this.TYPE_IQ] = 'randomIQ'
-      mapper[this.TYPE_FLANKER] = 'randomFlanker'
+      mapper[this.TYPE_FLANKER] = 'randomExperiment'
+      mapper[this.TYPE_SIMON] = 'randomExperiment'
       const methodName = mapper[this.type]
       const list = this[methodName]()
       return _.sampleSize(list, list.length)
     },
-    randomFlanker: function () {
+    randomExperiment: function () {
       return _.flatMap(this.items, item => {
         return _.fill(Array(item.count), item)
       })
@@ -469,8 +473,8 @@ export default {
           '请既快又准确地给图片命名。'
         ].join('<br/>')
         content[this.TYPE_SIMON] = [
-          '在实验中，看到红色圆形时，请快速按红色键；',
-          '看到蓝色圆形时，请快速按蓝色键，不用管图形出现在屏幕中的位置。',
+          '在实验中，看到红色方块时，请快速按红色键；',
+          '看到蓝色方块时，请快速按蓝色键，不用管图形出现在屏幕中的位置。',
           '请既快又准确地做出相应判断。'
         ].join('<br/>')
         content[this.TYPE_FLANKER] = [
@@ -491,6 +495,7 @@ export default {
     'picture-naming': PictureNaming,
     'lexical-decision': LexicalDecision,
     'flanker': Flanker,
+    'simon': Simon,
     'iq-tester': IQTester
   }
 }

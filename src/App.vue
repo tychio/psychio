@@ -57,12 +57,20 @@ export default {
         { "Q": "A5", "A": 6 }
       ],
       "flanker": [
-        { "count": 4, "type": "con", "direction": "right" },
-        { "count": 4, "type": "con", "direction": "left" },
-        { "count": 4, "type": "incon", "direction": "right" },
-        { "count": 4, "type": "incon", "direction": "left" },
-        { "count": 4, "type": "neu", "direction": "right" },
-        { "count": 4, "type": "neu", "direction": "left" }
+        { "count": 21, "type": "con", "direction": "right" },
+        { "count": 21, "type": "con", "direction": "left" },
+        { "count": 21, "type": "incon", "direction": "right" },
+        { "count": 21, "type": "incon", "direction": "left" },
+        { "count": 21, "type": "neu", "direction": "right" },
+        { "count": 21, "type": "neu", "direction": "left" }
+      ],
+      "simon": [
+        { "count": 21, "type": "red", "direction": "right" },
+        { "count": 21, "type": "red", "direction": "left" },
+        { "count": 21, "type": "red", "direction": "center" },
+        { "count": 21, "type": "blue", "direction": "right" },
+        { "count": 21, "type": "blue", "direction": "left" },
+        { "count": 21, "type": "blue", "direction": "center" }
       ]
     }`
     const demo = `{
@@ -89,6 +97,14 @@ export default {
         { "count": 4, "type": "incon", "direction": "left" },
         { "count": 4, "type": "neu", "direction": "right" },
         { "count": 4, "type": "neu", "direction": "left" }
+      ],
+      "simon": [
+        { "count": 4, "type": "red", "direction": "right" },
+        { "count": 4, "type": "red", "direction": "left" },
+        { "count": 4, "type": "red", "direction": "center" },
+        { "count": 4, "type": "blue", "direction": "right" },
+        { "count": 4, "type": "blue", "direction": "left" },
+        { "count": 4, "type": "blue", "direction": "center" }
       ]
     }`
     return {
