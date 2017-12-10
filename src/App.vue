@@ -110,20 +110,20 @@ export default {
         { "Q": "A04", "A": 1 }
       ],
       "flanker": [
-        { "count": 4, "type": "con", "direction": "right" },
-        { "count": 4, "type": "con", "direction": "left" },
-        { "count": 4, "type": "incon", "direction": "right" },
-        { "count": 4, "type": "incon", "direction": "left" },
-        { "count": 4, "type": "neu", "direction": "right" },
-        { "count": 4, "type": "neu", "direction": "left" }
+        { "count": 2, "type": "con", "direction": "right" },
+        { "count": 2, "type": "con", "direction": "left" },
+        { "count": 2, "type": "incon", "direction": "right" },
+        { "count": 2, "type": "incon", "direction": "left" },
+        { "count": 2, "type": "neu", "direction": "right" },
+        { "count": 2, "type": "neu", "direction": "left" }
       ],
       "simon": [
-        { "count": 4, "type": "red", "direction": "right" },
-        { "count": 4, "type": "red", "direction": "left" },
-        { "count": 4, "type": "red", "direction": "center" },
-        { "count": 4, "type": "blue", "direction": "right" },
-        { "count": 4, "type": "blue", "direction": "left" },
-        { "count": 4, "type": "blue", "direction": "center" }
+        { "count": 2, "type": "red", "direction": "right" },
+        { "count": 2, "type": "red", "direction": "left" },
+        { "count": 2, "type": "red", "direction": "center" },
+        { "count": 2, "type": "blue", "direction": "right" },
+        { "count": 2, "type": "blue", "direction": "left" },
+        { "count": 2, "type": "blue", "direction": "center" }
       ]
     }`
     return {
