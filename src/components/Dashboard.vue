@@ -13,7 +13,7 @@
         </md-input-container>
       </div>
       <md-input-container>
-        <md-switch v-model="realMode">{{realMode ? '实测' : '示例'}}模式</md-switch>
+        <md-switch v-model="realMode">{{realMode ? 'Experiment' : 'Practice'}} Mode/{{realMode ? '实测' : '示例'}}模式</md-switch>
       </md-input-container>
       <md-input-container>
         <label>Test Type/测试类型</label>
