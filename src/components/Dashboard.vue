@@ -36,7 +36,7 @@
     <div class="error" v-if="showError && !contact">Please enter contact/请填写联系方式</div>
     <md-button class="md-raised md-accent" @click.native="start">Start/开始</md-button>
     <md-button v-if="hasData && realMode" class="md-raised md-primary" @click.native="download">Export/导出</md-button>
-    <md-button v-if="!saved && realMode && hasData" class="md-raised md-warn" @click.native="upload">Save/保存</md-button>
+    <md-button v-if="realMode && hasData" class="md-raised md-warn" @click.native="upload">Save/保存</md-button>
   </section>
   <section :class="['container', {
     'processing': current >= 0
