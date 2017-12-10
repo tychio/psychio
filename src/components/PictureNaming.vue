@@ -25,6 +25,8 @@ export default {
       status: null,
       result: {
         name: this.item.name,
+        isEnd: this.item.isEnd,
+        switch: '',
         language: this.item.language,
         response: 0,
         record: null,
@@ -44,7 +46,7 @@ export default {
       } else if (this.status === 'playing') {
         this.startDate = new Date()
         this.media.start(5000)
-      } else if (this.status === 'ready') {
+      } else if (this.status === 'prompt') {
         this.recognition.start()
       }
     }
@@ -68,6 +70,7 @@ export default {
       if (this.startDate) {
         this.result.response = _.min([4000, new Date() - this.startDate])
         this.result.src = this.imageSrc
+        this.result.switch = this.isChanged
         this.startDate = 0
         callback && callback()
       }
@@ -92,11 +95,20 @@ export default {
     },
     imageSrc: function () {
       return './static/picture-naming/' + this.item.name + '.gif'
+    },
+    isChanged: function () {
+      let isChange = 'Not changed'
+      if (this.item.isChange) {
+        isChange = 'Changed'
+      } else if (this.item.isChange === null) {
+        isChange = 'First'
+      }
+      return isChange
     }
   },
   mounted: function () {
     this.loadRecorder()
-    const steps = [1000, 500, 700, 4000]
+    const steps = [1000, 250, 500, 4000]
     if (this.item.isEnd) {
       steps.push(1000)
     }

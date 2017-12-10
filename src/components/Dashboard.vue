@@ -13,7 +13,7 @@
         </md-input-container>
       </div>
       <md-input-container>
-        <md-switch v-model="realMode">{{realMode ? '实测' : '示例'}}模式</md-switch>
+        <md-switch v-model="realMode">{{realMode ? 'Experiment' : 'Practice'}} Mode/{{realMode ? '实测' : '示例'}}模式</md-switch>
       </md-input-container>
       <md-input-container>
         <label>Test Type/测试类型</label>
@@ -34,8 +34,9 @@
       </md-input-container>
     </form>
     <div class="error" v-if="showError && !contact">Please enter contact/请填写联系方式</div>
-    <md-button class="md-raised md-accent" @click.native="start">Start</md-button>
-    <md-button v-if="hasData && realMode" class="md-raised md-primary" @click.native="download">Export</md-button>
+    <md-button class="md-raised md-accent" @click.native="start">Start/开始</md-button>
+    <md-button v-if="hasData && realMode" class="md-raised md-primary" @click.native="download">Export/导出</md-button>
+    <md-button v-if="!saved && realMode && hasData" class="md-raised md-warn" @click.native="upload">Save/保存</md-button>
   </section>
   <section :class="['container', {
     'processing': current >= 0
@@ -74,8 +75,8 @@
         </md-avatar>
         <span>{{result.name}} - ({{result.response}}ms)</span>
         <span>[{{result.language}}]</span>
-        <small>Choice/选择(Fact/实际)：{{result.right ? 'True/真' : 'False/假'}}({{!result.isNon ? 'True/真' : 'False/假'}})</small>
-        <md-icon v-if="result.right !== result.isNon" md-theme="green" class="md-primary">∨</md-icon>
+        <small>Choice/选择(Fact/实际)：{{result.selection ? 'True/真' : 'False/假'}}({{!result.isNon ? 'True/真' : 'False/假'}})</small>
+        <md-icon v-if="result.selection !== result.isNon" md-theme="green" class="md-primary">∨</md-icon>
         <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
       </md-list-item>
     </md-list>
@@ -113,17 +114,7 @@
         </span>
       </md-list-item>
     </md-list>
-    <md-list v-if="type === TYPE_IQ">
-      <md-list-item v-for="(result, index) in results[sumType]" key="index">
-        <md-avatar>
-          <img :src="result.src">
-        </md-avatar>
-        <span>{{result.name}} - ({{result.response}}ms)</span>
-        <span>Answer/答案 - Choice/作答：<small>{{result.answer}}</small> - {{result.choice}}</span>
-        <md-icon v-if="result.answer === result.choice" md-theme="green" class="md-primary">∨</md-icon>
-        <md-icon v-else md-theme="orange" class="md-warn">x</md-icon>
-      </md-list-item>
-    </md-list>
+    <div class="score" v-if="type === TYPE_IQ && IQscore">Score/最后得分：{{IQscore}}/60</div>
   </section>
 </main>
 </template>
@@ -131,6 +122,7 @@
 <script>
 import * as _ from 'lodash'
 import Jszip from 'jszip'
+import axios from 'axios'
 import * as screenfull from 'screenfull'
 import { saveAs } from 'file-saver'
 import PictureNaming from './PictureNaming'
@@ -145,6 +137,7 @@ export default {
   data () {
     let data = {
       type: '',
+      saved: false,
       TYPE_PIC: 'picture-naming',
       TYPE_IQ: 'iq-tester',
       TYPE_LEX: 'lexical-decision',
@@ -162,6 +155,7 @@ export default {
       yourname: '',
       contact: '',
       realMode: false,
+      nextTimeout: null,
       KEY: {
         START: 32
       }
@@ -195,6 +189,7 @@ export default {
         screenfull.request(this.$refs.container)
         screenfull.onchange(event => {
           if (!screenfull.isFullscreen) {
+            clearTimeout(this.nextTimeout)
             this.current = -1
           }
         })
@@ -221,10 +216,11 @@ export default {
         if (this.current === this.list.length) {
           this.current = -1
           screenfull.exit()
+          this.upload()
         } else {
-          setTimeout(() => {
+          this.nextTimeout = setTimeout(() => {
             this.current++
-          }, 250)
+          }, 500)
         }
       }
     },
@@ -236,13 +232,13 @@ export default {
       mapper[this.TYPE_FLANKER] = 'randomExperiment'
       mapper[this.TYPE_SIMON] = 'randomExperiment'
       const methodName = mapper[this.type]
-      const list = this[methodName]()
-      return _.sampleSize(list, list.length)
+      return this[methodName]()
     },
     randomExperiment: function () {
-      return _.flatMap(this.items, item => {
+      const list = _.flatMap(this.items, item => {
         return _.fill(Array(item.count), item)
       })
+      return _.sampleSize(list, list.length)
     },
     randomIQ: function () {
       return this.items
@@ -264,29 +260,34 @@ export default {
       const allWords = _.concat(nonwords, words)
       return _.sampleSize(allWords, allWords.length)
     },
-    logPictures: function (randomItemGroups) {
-      _.each(randomItemGroups, itemGroup => {
-        console.group('=========================================')
-        _.each(itemGroup, item => {
-          console.group('---------------------')
-          console.log('picture name:', item.name)
-          console.log('language:', item.language)
-          if (item.isChange) {
-            console.log('Changed')
-          } else {
-            console.log('Not changed')
-          }
-          console.groupEnd('---------------------')
-        })
-        console.groupEnd('<=========================================>')
+    logPictures: function (randomItems) {
+      console.group('=========================================')
+      _.each(randomItems, item => {
+        console.group('---------------------')
+        console.log('picture name:', item.name)
+        console.log('language:', item.language)
+        if (item.isChange) {
+          console.log('Changed')
+        } else if (item.isChange === null) {
+          console.log('First')
+        } else {
+          console.log('Not changed')
+        }
+        console.groupEnd('---------------------')
+        if (item.isEnd) {
+          console.groupEnd('<=========================================>')
+          console.group('<=========================================>')
+        }
       })
     },
     randomPictures: function () {
       const uyghurGroups = this.randomPictureGroup('uyghur', this.groupImages(this.items))
       const ChineseGroups = this.randomPictureGroup('chinese', this.groupImages(this.items))
-      this.logPictures(uyghurGroups)
-      this.logPictures(ChineseGroups)
-      return _.flattenDeep([uyghurGroups, ChineseGroups])
+      const groups = _.flatten([uyghurGroups, ChineseGroups])
+      const randomGroups = _.sampleSize(groups, groups.length)
+      const randomItems = _.flatten(randomGroups)
+      this.logPictures(randomItems)
+      return randomItems
     },
     randomPictureGroup: function (languageName, imgGroups) {
       const languages = ['uyghur', 'chinese']
@@ -371,7 +372,7 @@ export default {
         const result = _.slice(pool, currentIndex, currentIndex + count)
         currentIndex += count
         const randomResult = _.sampleSize(result, count)
-        return this.sortedWithSpace(randomResult, 3)
+        return this.sortedWithSpace(randomResult, this.realMode ? 3 : 1)
       })
       return results
     },
@@ -397,25 +398,46 @@ export default {
       console.log('sorted images:', results)
       return results
     },
+    upload: function (event) {
+      if (!this.realMode) {
+        return
+      }
+      axios.post(process.env.SERVER_URL.EXPERIMENT, {
+        name: this.contact,
+        result: {
+          [this.TYPE_PIC]: JSON.stringify(this.results[this.TYPE_PIC]),
+          [this.TYPE_LEX_CN]: JSON.stringify(this.results[this.TYPE_LEX_CN]),
+          [this.TYPE_LEX_UG]: JSON.stringify(this.results[this.TYPE_LEX_UG]),
+          [this.TYPE_FLANKER]: JSON.stringify(this.results[this.TYPE_FLANKER]),
+          [this.TYPE_SIMON]: JSON.stringify(this.results[this.TYPE_SIMON]),
+          [this.TYPE_IQ]: JSON.stringify(this.results[this.TYPE_IQ])
+        }
+      }).then(response => {
+        if (response.data) {
+          this.saved = !!event
+        }
+      })
+    },
     download: function () {
       const zip = new Jszip()
+      const folder = zip.folder('psychio_results_' + this.contact)
       _.each(this.results, (result, type) => {
         _.each(result, (item, index) => {
           const fileName = [
             type,
             (_.fill(Array(3), '0').join('') + (index + 1)).slice(-3)
           ].join('_')
-          const folder = zip.folder(fileName)
           if (item.record) {
             folder.file(fileName + '.wav', item.record)
           }
-          folder.file(fileName + '.json', JSON.stringify(item))
+          item.number = fileName
         })
       })
 
-      zip.file('info.json', JSON.stringify({
+      folder.file('info.json', JSON.stringify({
         name: this.yourname,
-        contact: this.contact
+        contact: this.contact,
+        results: this.results
       }))
 
       zip.generateAsync({type: 'blob'})
@@ -433,7 +455,7 @@ export default {
       }
     },
     sectionCount: function () {
-      return this.realMode ? this.SECTION_COUNT : 1
+      return this.realMode ? this.SECTION_COUNT : 2
     },
     sumType: function () {
       let type = this.type
@@ -447,6 +469,9 @@ export default {
       const hasLexicalChinese = this.results[this.TYPE_LEX_CN].length
       const hasLexicalUyghur = this.results[this.TYPE_LEX_UG].length
       return hasPictures || hasLexicalChinese || hasLexicalUyghur
+    },
+    IQscore: function () {
+      return _.countBy(this.results[this.TYPE_IQ], result => (result.answer === result.choice))['true']
     },
     instructionContent: function () {
       let content = {}
@@ -482,7 +507,10 @@ export default {
           'If the arrow in the centre is pointing to the left, press the “Red” key.',
           'If the arrow in the centre is pointing to the right, press the “Blue” key;'
         ].join('<br/>')
-        content[this.TYPE_IQ] = 'Please answer the following 60 questions within 40 minutes.'
+        content[this.TYPE_IQ] = [
+          'Please answer the following 60 questions within 40 minutes. 5 groups in all (A-E)， 12 questions for each group.',
+          'Please answer question with number'
+        ].join('<br/>')
       } else {
         content = {
           header: '欢迎参加实验！',
@@ -515,7 +543,7 @@ export default {
           '如果中间的箭头指向右边，请快速按蓝色键；'
         ].join('<br/>')
         content[this.TYPE_IQ] = [
-          '请在40分钟内作答下列60道题。',
+          '请在40分钟内作答下列60道题。共5组（A-E），每组各12题。',
           '请按相应的数字键进行作答。'
         ].join('<br>')
       }
@@ -598,5 +626,10 @@ export default {
 i.icon.icon-cross:before {
   font-size: 90px;
   font-family: sans-serif;
+}
+
+.score {
+  font-size: 32px;
+  line-height: 80px;
 }
 </style>

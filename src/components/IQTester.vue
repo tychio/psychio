@@ -1,8 +1,10 @@
 <template>
   <div v-show="status" :class="['stage', 'stage-' + status]">
+    <h5>{{item.Q}}</h5>
     <div class="stage-pic" :style="{
       'background-image': 'url(' + imageSrc + ')'
     }"></div>
+    <div class="patch"></div>
     <input type="text" v-focus v-if="status === 'playing'" @keyup="end">
   </div>
 </template>
@@ -85,6 +87,22 @@ export default {
   left: 0;
   right: 0;
   background-color: white;
+}
+
+h5 {
+  font-size: 36px;
+  text-align: left;
+  margin: 10px 0 -50px 10px;
+  line-height: 40px;
+}
+
+.patch {
+  position: absolute;
+  background: white;
+  width: 100px;
+  height: 500px;
+  bottom: 0;
+  right: 0;
 }
 
 .stage-pic {
