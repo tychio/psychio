@@ -34,8 +34,9 @@
       </md-input-container>
     </form>
     <div class="error" v-if="showError && !contact">Please enter contact/请填写联系方式</div>
-    <md-button class="md-raised md-accent" @click.native="start">Start</md-button>
-    <md-button v-if="hasData && realMode" class="md-raised md-primary" @click.native="download">Export</md-button>
+    <md-button class="md-raised md-accent" @click.native="start">Start/开始</md-button>
+    <md-button v-if="hasData && realMode" class="md-raised md-primary" @click.native="download">Export/导出</md-button>
+    <md-button v-if="!saved && realMode && hasData" class="md-raised md-warn" @click.native="upload">Save/保存</md-button>
   </section>
   <section :class="['container', {
     'processing': current >= 0
@@ -121,6 +122,7 @@
 <script>
 import * as _ from 'lodash'
 import Jszip from 'jszip'
+import axios from 'axios'
 import * as screenfull from 'screenfull'
 import { saveAs } from 'file-saver'
 import PictureNaming from './PictureNaming'
@@ -135,6 +137,7 @@ export default {
   data () {
     let data = {
       type: '',
+      saved: false,
       TYPE_PIC: 'picture-naming',
       TYPE_IQ: 'iq-tester',
       TYPE_LEX: 'lexical-decision',
@@ -213,6 +216,7 @@ export default {
         if (this.current === this.list.length) {
           this.current = -1
           screenfull.exit()
+          this.upload()
         } else {
           this.nextTimeout = setTimeout(() => {
             this.current++
@@ -393,6 +397,26 @@ export default {
       })
       console.log('sorted images:', results)
       return results
+    },
+    upload: function (event) {
+      if (!this.realMode) {
+        return
+      }
+      axios.post(process.env.SERVER_URL.EXPERIMENT, {
+        name: this.contact,
+        result: {
+          [this.TYPE_PIC]: JSON.stringify(this.results[this.TYPE_PIC]),
+          [this.TYPE_LEX_CN]: JSON.stringify(this.results[this.TYPE_LEX_CN]),
+          [this.TYPE_LEX_UG]: JSON.stringify(this.results[this.TYPE_LEX_UG]),
+          [this.TYPE_FLANKER]: JSON.stringify(this.results[this.TYPE_FLANKER]),
+          [this.TYPE_SIMON]: JSON.stringify(this.results[this.TYPE_SIMON]),
+          [this.TYPE_IQ]: JSON.stringify(this.results[this.TYPE_IQ])
+        }
+      }).then(response => {
+        if (response.data) {
+          this.saved = !!event
+        }
+      })
     },
     download: function () {
       const zip = new Jszip()
