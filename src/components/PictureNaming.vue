@@ -25,6 +25,8 @@ export default {
       status: null,
       result: {
         name: this.item.name,
+        isEnd: this.item.isEnd,
+        switch: '',
         language: this.item.language,
         response: 0,
         record: null,
@@ -68,6 +70,7 @@ export default {
       if (this.startDate) {
         this.result.response = _.min([4000, new Date() - this.startDate])
         this.result.src = this.imageSrc
+        this.result.switch = this.isChanged
         this.startDate = 0
         callback && callback()
       }
@@ -92,6 +95,15 @@ export default {
     },
     imageSrc: function () {
       return './static/picture-naming/' + this.item.name + '.gif'
+    },
+    isChanged: function () {
+      let isChange = 'Not changed'
+      if (this.item.isChange) {
+        isChange = 'Changed'
+      } else if (this.item.isChange === null) {
+        isChange = 'First'
+      }
+      return isChange
     }
   },
   mounted: function () {

@@ -152,6 +152,7 @@ export default {
       yourname: '',
       contact: '',
       realMode: false,
+      nextTimeout: null,
       KEY: {
         START: 32
       }
@@ -185,6 +186,7 @@ export default {
         screenfull.request(this.$refs.container)
         screenfull.onchange(event => {
           if (!screenfull.isFullscreen) {
+            clearTimeout(this.nextTimeout)
             this.current = -1
           }
         })
@@ -212,7 +214,7 @@ export default {
           this.current = -1
           screenfull.exit()
         } else {
-          setTimeout(() => {
+          this.nextTimeout = setTimeout(() => {
             this.current++
           }, 500)
         }
@@ -254,30 +256,34 @@ export default {
       const allWords = _.concat(nonwords, words)
       return _.sampleSize(allWords, allWords.length)
     },
-    logPictures: function (randomItemGroups) {
-      _.each(randomItemGroups, itemGroup => {
-        console.group('=========================================')
-        _.each(itemGroup, item => {
-          console.group('---------------------')
-          console.log('picture name:', item.name)
-          console.log('language:', item.language)
-          if (item.isChange) {
-            console.log('Changed')
-          } else {
-            console.log('Not changed')
-          }
-          console.groupEnd('---------------------')
-        })
-        console.groupEnd('<=========================================>')
+    logPictures: function (randomItems) {
+      console.group('=========================================')
+      _.each(randomItems, item => {
+        console.group('---------------------')
+        console.log('picture name:', item.name)
+        console.log('language:', item.language)
+        if (item.isChange) {
+          console.log('Changed')
+        } else if (item.isChange === null) {
+          console.log('First')
+        } else {
+          console.log('Not changed')
+        }
+        console.groupEnd('---------------------')
+        if (item.isEnd) {
+          console.groupEnd('<=========================================>')
+          console.group('<=========================================>')
+        }
       })
     },
     randomPictures: function () {
       const uyghurGroups = this.randomPictureGroup('uyghur', this.groupImages(this.items))
       const ChineseGroups = this.randomPictureGroup('chinese', this.groupImages(this.items))
-      this.logPictures(uyghurGroups)
-      this.logPictures(ChineseGroups)
-      const groups = _.flattenDeep([uyghurGroups, ChineseGroups])
-      return _.sampleSize(groups, groups.length)
+      const groups = _.flatten([uyghurGroups, ChineseGroups])
+      const randomGroups = _.sampleSize(groups, groups.length)
+      const randomItems = _.flatten(randomGroups)
+      this.logPictures(randomItems)
+      return randomItems
     },
     randomPictureGroup: function (languageName, imgGroups) {
       const languages = ['uyghur', 'chinese']
@@ -390,23 +396,24 @@ export default {
     },
     download: function () {
       const zip = new Jszip()
+      const folder = zip.folder('psychio_results_' + this.contact)
       _.each(this.results, (result, type) => {
         _.each(result, (item, index) => {
           const fileName = [
             type,
             (_.fill(Array(3), '0').join('') + (index + 1)).slice(-3)
           ].join('_')
-          const folder = zip.folder(fileName)
           if (item.record) {
             folder.file(fileName + '.wav', item.record)
           }
-          folder.file(fileName + '.json', JSON.stringify(item))
+          item.number = fileName
         })
       })
 
-      zip.file('info.json', JSON.stringify({
+      folder.file('info.json', JSON.stringify({
         name: this.yourname,
-        contact: this.contact
+        contact: this.contact,
+        results: this.results
       }))
 
       zip.generateAsync({type: 'blob'})
