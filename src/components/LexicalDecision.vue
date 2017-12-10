@@ -29,7 +29,7 @@ export default {
         name: this.item.name,
         isNon: this.item.isNon,
         response: 0,
-        right: null,
+        selection: null,
         language: this.language,
         src: ''
       }
@@ -54,11 +54,11 @@ export default {
       } else if (this.status === 'playing') {
         this.record()
         if (event.keyCode === this.KEY.REAL) {
-          this.result.right = true
+          this.result.selection = true
         } else if (event.keyCode === this.KEY.FAKE) {
-          this.result.right = false
+          this.result.selection = false
         }
-        if (this.result.right !== null) {
+        if (this.result.selection !== null) {
           clearTimeout(this.endTimeout)
           this.setStatus('feedback')
         }
@@ -87,10 +87,10 @@ export default {
     },
     feedback: function () {
       let feedback = ''
-      if (this.result.right === null) {
+      if (this.result.selection === null) {
         feedback = '反应超时'
       } else {
-        feedback = this.result.right !== this.result.isNon ? '正确' : '错误'
+        feedback = this.result.selection !== this.result.isNon ? '正确' : '错误'
       }
       return feedback
     }
