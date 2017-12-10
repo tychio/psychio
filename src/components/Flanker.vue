@@ -1,6 +1,8 @@
 <template>
   <div v-show="status" :class="['stage', 'stage-' + status]">
-    <div class="stage-arrow">
+    <div :class="['stage-arrow', {
+      'macos': isMac
+    }]">
       <span :class="[result.type, result.direction]"><span>{{arrowText}}</span></span>
     </div>
     <div class="feedback">{{feedback}}</div>
@@ -29,7 +31,8 @@ export default {
         direction: this.item.direction,
         selection: null,
         response: 0
-      }
+      },
+      isMac: false
     }
   },
   watch: {
@@ -100,6 +103,7 @@ export default {
     this.setStatus('ready', this.steps[0])
     this.setStatus('playing', _.sum(_.slice(this.steps, 0, 2)))
     this.endTimeout = this.setStatus('feedback', _.sum(_.slice(this.steps, 0, 3)))
+    this.isMac = window.navigator.platform === 'MacIntel'
   }
 }
 </script>
@@ -174,6 +178,10 @@ i.icon.icon-cross:before {
 
 .stage-arrow span.left span {
   display: inline-block;
+  transform: rotate(180deg) translateY(-11px) translateX(1px);
+}
+
+.stage-arrow.macos span.left span {
   transform: rotate(180deg);
 }
 
@@ -191,6 +199,13 @@ i.icon.icon-cross:before {
 .stage-arrow span.right.incon:after {
   content: '\2192\2192';
   display: inline-block;
+  transform: rotate(180deg) translateY(-11px) translateX(1px);
+}
+
+.stage-arrow.macos span.left.con:before,
+.stage-arrow.macos span.left.con:after,
+.stage-arrow.macos span.right.incon:before,
+.stage-arrow.macos span.right.incon:after {
   transform: rotate(180deg);
 }
 
@@ -200,6 +215,13 @@ i.icon.icon-cross:before {
 .stage-arrow span.right.neu:after {
   content: '--';
   display: inline-block;
+  transform: translateY(-1px);
+}
+
+.stage-arrow.macos span.left.neu:before,
+.stage-arrow.macos span.left.neu:after,
+.stage-arrow.macos span.right.neu:before,
+.stage-arrow.macos span.right.neu:after {
   transform: translateY(2px);
 }
 </style>
