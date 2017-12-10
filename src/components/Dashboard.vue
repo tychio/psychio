@@ -533,7 +533,8 @@ export default {
         ].join('<br/>')
         content[this.TYPE_SIMON] = [
           '在实验中，看到红色方块时，请按红色键；',
-          '看到蓝色方块时，请按蓝色键，不用管图形出现在屏幕中的位置。'
+          '看到蓝色方块时，请按蓝色键；',
+          '不用管图形出现在屏幕中的位置。'
         ].join('<br/>')
         content[this.TYPE_FLANKER] = [
           '你将会看到一系列的箭头，请判断中间位置箭头所指的方向，不用管旁边的箭头方向。',
@@ -580,7 +581,7 @@ export default {
 
 .instruction-content {
   width: 80%;
-  margin: 300px auto 0;
+  margin: 230px auto 0;
   font-size: 20px;
 }
 
