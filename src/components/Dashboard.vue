@@ -581,7 +581,7 @@ export default {
 
 .instruction-content {
   width: 80%;
-  margin: 300px auto 0;
+  margin: 230px auto 0;
   font-size: 20px;
 }
 
