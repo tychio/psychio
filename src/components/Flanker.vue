@@ -123,7 +123,7 @@ export default {
   right: 0;
   height: 100%;
   width: 100%;
-  font-family: monospace;
+  font-family: 'Consolas';
   font-size: 90px;
   text-align: center;
 }
@@ -174,7 +174,7 @@ i.icon.icon-cross:before {
 
 .stage-arrow span.left span {
   display: inline-block;
-  transform: rotate(180deg) translateY(-17px);
+  transform: rotate(180deg);
 }
 
 .stage-arrow span.right.con:before,
@@ -191,7 +191,7 @@ i.icon.icon-cross:before {
 .stage-arrow span.right.incon:after {
   content: '\2192\2192';
   display: inline-block;
-  transform: rotate(180deg) translateY(-17px);
+  transform: rotate(180deg);
 }
 
 .stage-arrow span.left.neu:before,
@@ -200,6 +200,6 @@ i.icon.icon-cross:before {
 .stage-arrow span.right.neu:after {
   content: '--';
   display: inline-block;
-  transform: scaleY(0.89);
+  transform: translateY(2px);
 }
 </style>
