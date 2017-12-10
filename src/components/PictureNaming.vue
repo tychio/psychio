@@ -46,7 +46,7 @@ export default {
       } else if (this.status === 'playing') {
         this.startDate = new Date()
         this.media.start(5000)
-      } else if (this.status === 'ready') {
+      } else if (this.status === 'prompt') {
         this.recognition.start()
       }
     }
