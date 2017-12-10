@@ -4,7 +4,7 @@
     <form class="form">
       <div class="col-half">
         <md-input-container>
-          <label>Your Name/你的名字</label>
+          <label>Number/编号</label>
           <md-input v-model="yourname"></md-input>
         </md-input-container>
         <md-input-container>
