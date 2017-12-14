@@ -508,7 +508,7 @@ export default {
           'If the arrow in the centre is pointing to the right, press the “Blue” key;'
         ].join('<br/>')
         content[this.TYPE_IQ] = [
-          'Please answer the following 60 questions within 40 minutes. 5 groups in all (A-E)， 12 questions for each group.',
+          'Please answer the following 60 questions within 20 minutes. 5 groups in all (A-E)， 12 questions for each group.',
           'Please answer question with number'
         ].join('<br/>')
       } else {
@@ -542,7 +542,7 @@ export default {
           '如果中间的箭头指向右边，请按蓝色键；'
         ].join('<br/>')
         content[this.TYPE_IQ] = [
-          '请在40分钟内作答下列60道题。共5组（A-E），每组各12题。',
+          '请在20分钟内作答下列60道题。共5组（A-E），每组各12题。',
           '请按相应的数字键进行作答。'
         ].join('<br>')
       }
