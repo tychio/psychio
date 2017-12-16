@@ -13,7 +13,8 @@
     "lint": "eslint --ext .js,.vue src test/unit/specs",
     "release": "git push prod `git subtree split --prefix release release`:master --force",
     "release:github": "git push origin `git subtree split --prefix release page`:gh-pages --force",
-    "release:coding": "git push coding `git subtree split --prefix release page`:master --force"
+    "release:coding": "git push coding `git subtree split --prefix release page`:master --force",
+    "release:codings": "git push codings `git subtree split --prefix release page`:master --force"
   },
   "dependencies": {
     "axios": "^0.17.1",
