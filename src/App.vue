@@ -6,6 +6,18 @@
     </h1>
     <Dashboard :design="designs" :demo="demo"></Dashboard>
     <ul class="transparent">
+      <li v-for="name in demo['picture-naming']">
+        <img :src="'./static/picture-naming/' + name + '.gif'">
+      </li>
+      <li v-for="(kinds, lang) in demo['lexical-decision']">
+        <template v-for="(items, kind) in kinds">
+          <img v-for="name in items"
+            :src="'./static/lexical-decision/' + lang + '-' + kind + '/' + name + '.png'">
+        </template>
+      </li>
+      <li v-for="item in demo['iq-tester']">
+        <img :src="'./static/iq-tester/' + item.Q + '.jpg'">
+      </li>
       <li v-for="name in designs['picture-naming']">
         <img :src="'./static/picture-naming/' + name + '.gif'">
       </li>
